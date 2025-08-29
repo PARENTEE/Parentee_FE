@@ -62,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
                   Expanded(child: Divider(thickness: 1)),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Text("hoặc"),
+                    child: Text("Hoặc"),
                   ),
                   Expanded(child: Divider(thickness: 1)),
                 ],
