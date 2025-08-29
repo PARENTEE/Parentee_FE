@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -26,7 +27,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
-              Image.asset("assets/images/register.png", height: 250),
+              Lottie.asset("assets/lottie/register.json", height: 250),
               const SizedBox(height: 24),
               const Text(
                 "Tạo tài khoản để sử dụng dịch vụ.",

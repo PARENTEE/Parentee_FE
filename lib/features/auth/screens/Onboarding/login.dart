@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lottie/lottie.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/login-successfully.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/register.dart';
@@ -31,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
 
-              Image.asset("assets/images/onboarding.png", height: 250),
+              Lottie.asset("assets/lottie/stork.json", height: 250),
 
               const Text(
                 "Đăng nhập để sử dụng dịch vụ.",
