@@ -49,7 +49,7 @@ class _RegisterPageState extends State<RegisterPage> {
               // Username
               TextField(
                 decoration: InputDecoration(
-                  labelText: "Username",
+                  labelText: "Tên đăng nhập",
                   hintText: "example",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -62,7 +62,7 @@ class _RegisterPageState extends State<RegisterPage> {
               TextField(
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
-                  labelText: "Phone",
+                  labelText: "Số điện thoại",
                   hintText: "0123456789",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -75,7 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
               TextField(
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
-                  labelText: "Password",
+                  labelText: "Mật khẩu",
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword
