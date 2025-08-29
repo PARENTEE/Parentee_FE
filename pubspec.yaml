@@ -74,6 +74,17 @@ flutter:
     - assets/images/onboarding_3.png
     - assets/images/onboarding_4.png
     - assets/images/login_success.png
+    - assets/lottie/
+    - assets/lottie/chatbot.json
+    - assets/lottie/family.json
+    - assets/lottie/login.json
+    - assets/lottie/register.json
+    - assets/lottie/stork.json
+    - assets/lottie/baby.json
+    - assets/lottie/baby_sleep.json
+    - assets/lottie/success.json
+    - assets/lottie/family_1.json
+    - assets/lottie/family_1.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/login.dart';
 
@@ -18,24 +19,28 @@ class _OnboardingPageState extends State<OnboardingPage> {
       "title": "Parentee",
       "subtitle": "Trợ lý cho gia đình nhỏ của bạn",
       "image": "assets/images/parentee_logo.png",
+      "type": "image",
     },
     {
       "title": "Kết nối cả gia đình",
       "subtitle":
           "Tạo không gian riêng tư cho gia đình bạn – nơi mọi người cùng chia sẻ, nhắc nhở, và quan tâm nhau mỗi ngày.",
-      "image": "assets/images/onboarding_4.png",
+      "image": "assets/lottie/family.json",
+      "type": "lottie",
     },
     {
       "title": "Quản lý lịch trình & thói quen",
       "subtitle":
           "Từ lịch của bé đến công việc của ba mẹ – mọi hoạt động đều được theo dõi và nhắc nhở thông minh, giúp cả nhà luôn chủ động.",
-      "image": "assets/images/onboarding_2.png",
+      "image": "assets/lottie/baby_sleep.json",
+      "type": "lottie",
     },
     {
       "title": "Chăm sóc bằng yêu thương",
       "subtitle":
           "Ghi chú tâm trạng, theo dõi sức khỏe, lưu giữ những khoảnh khắc đáng nhớ – mọi thứ đều vì một gia đình hạnh phúc hơn.",
-      "image": "assets/images/onboarding_3.png",
+      "image": "assets/lottie/chatbot.json",
+      "type": "lottie",
     },
   ];
 
@@ -51,24 +56,30 @@ class _OnboardingPageState extends State<OnboardingPage> {
           });
         },
         itemBuilder: (context, index) {
+          final page = _pages[index];
           return Container(
             padding: const EdgeInsets.all(24),
             alignment: Alignment.center,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(
-                  _pages[index]["image"]!,
-                  height:
-                      _pages[index]["image"] ==
-                              "assets/images/parentee_logo.png"
-                          ? 120
-                          : 250,
-                ),
+                page["type"] == "lottie"
+                    ? Lottie.asset(
+                      page["image"]!,
+                      height: 250,
+                      fit: BoxFit.contain,
+                    )
+                    : Image.asset(
+                      page["image"]!,
+                      height:
+                          page["image"] == "assets/images/parentee_logo.png"
+                              ? 120
+                              : 250,
+                    ),
 
                 const SizedBox(height: 30),
                 Text(
-                  _pages[index]["title"]!,
+                  page["title"]!,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 24,
@@ -77,7 +88,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _pages[index]["subtitle"]!,
+                  page["subtitle"]!,
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 15),
                 ),
