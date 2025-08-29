@@ -91,8 +91,8 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: "Password",
-                  hintText: "at least 8 characters",
+                  labelText: "Mật khẩu",
+                  hintText: "tối thiểu 8 ký tự",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),

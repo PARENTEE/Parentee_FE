@@ -71,7 +71,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   _pages[index]["title"]!,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    fontSize: 28,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -79,7 +79,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 Text(
                   _pages[index]["subtitle"]!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 18),
+                  style: const TextStyle(fontSize: 15),
                 ),
               ],
             ),
@@ -95,7 +95,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: TextButton(
                   child: const Text(
                     "Bắt đầu",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
+                    style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                   onPressed: () {
                     Navigator.pushReplacement(
