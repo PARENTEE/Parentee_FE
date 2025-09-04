@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parentee_fe/features/auth/screens/HomePage/home_page.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/onboarding-page.dart';
 
 void main() {
@@ -19,6 +20,8 @@ class MyApp extends StatelessWidget {
       ),
       // Trang khởi động là OnboardingPage
       home: const OnboardingPage(),
+
+      routes: {"/home": (context) => const HomePage()},
     );
   }
 }

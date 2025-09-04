@@ -28,7 +28,6 @@ class _LoginSuccessfullyPageState extends State<LoginSuccessfullyPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Stack(
         children: [
           /// Hiển thị Lottie pháo bông chạy loop
