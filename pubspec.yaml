@@ -38,6 +38,9 @@ dependencies:
   google_fonts: ^6.2.0
   animated_splash_screen: ^1.3.0
   lottie: ^3.3.1
+  carousel_slider: ^5.0.0
+  weather_icons: ^3.0.0
+
 
 dev_dependencies:
   flutter_test:
@@ -74,6 +77,22 @@ flutter:
     - assets/images/onboarding_3.png
     - assets/images/onboarding_4.png
     - assets/images/login_success.png
+    - assets/images/baby-bath-tub.png
+    - assets/images/chatbot_1.png
+    - assets/images/drugs.png
+    - assets/images/nutrient.png
+    - assets/images/order-tracking.png
+    - assets/images/weather.png
+
+
+    - assets/images/homepage/avatar.jpg
+    - assets/images/homepage/bond.jpg
+    - assets/images/homepage/co_parenting.jpg
+    - assets/images/homepage/connections.jpg
+    - assets/images/homepage/family.jpg
+    - assets/images/homepage/happiness.jpg
+    - assets/images/homepage/healthy_parenting.jpg
+
     - assets/lottie/
     - assets/lottie/chatbot.json
     - assets/lottie/family.json
