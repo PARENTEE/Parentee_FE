@@ -21,14 +21,14 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               const Text(
                 "Đăng ký tài khoản",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
               Lottie.asset("assets/lottie/register.json", height: 250),
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
               const Text(
                 "Tạo tài khoản để sử dụng dịch vụ.",
                 style: TextStyle(fontSize: 16, color: Colors.black54),
