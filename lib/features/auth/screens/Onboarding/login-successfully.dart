@@ -12,11 +12,21 @@ class LoginSuccessfullyPage extends StatefulWidget {
 class _LoginSuccessfullyPageState extends State<LoginSuccessfullyPage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _lottieController;
+  bool _isButtonEnabled = false;
 
   @override
   void initState() {
     super.initState();
     _lottieController = AnimationController(vsync: this);
+
+    // Delay 3s rồi enable button
+    Future.delayed(const Duration(seconds: 8), () {
+      if (mounted) {
+        setState(() {
+          _isButtonEnabled = true;
+        });
+      }
+    });
   }
 
   @override
@@ -78,11 +88,20 @@ class _LoginSuccessfullyPageState extends State<LoginSuccessfullyPage>
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(context, "/home");
-                      },
+                      onPressed:
+                          _isButtonEnabled
+                              ? () {
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  "/home",
+                                );
+                              }
+                              : null, // disable nếu chưa đủ 3s
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary_button,
+                        backgroundColor:
+                            _isButtonEnabled
+                                ? AppColors.primary_button
+                                : Colors.grey, // đổi màu khi disable
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
