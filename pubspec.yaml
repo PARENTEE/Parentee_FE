@@ -93,8 +93,6 @@ flutter:
     - assets/images/weather/mist.jpg
     - assets/images/weather/default.jpg
 
-
-    - assets/images/homepage/avatar.jpg
     - assets/images/homepage/bond.jpg
     - assets/images/homepage/co_parenting.jpg
     - assets/images/homepage/connections.jpg
@@ -114,7 +112,7 @@ flutter:
     - assets/lottie/cloudy.json
     - assets/lottie/rain.json
     - assets/lottie/sunny.json
-    - assets/lottie.thunderstorm.json
+    - assets/lottie/thunderstorm.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

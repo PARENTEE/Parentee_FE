@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:parentee_fe/features/auth/screens/HomePage/Weather/weather_service.dart';
+import 'package:parentee_fe/features/auth/services/weather_service.dart';
 
 class WeatherPage extends StatefulWidget {
   const WeatherPage({super.key});
@@ -13,7 +13,7 @@ class _WeatherPageState extends State<WeatherPage> {
   final WeatherService _service = WeatherService();
   Map<String, dynamic>? _weather;
   bool _loading = true;
-  String city = "Hanoi";
+  String city = "Thành phố Hồ Chí Minh";
 
   @override
   void initState() {
@@ -33,36 +33,23 @@ class _WeatherPageState extends State<WeatherPage> {
     }
   }
 
-  /// Lấy file Lottie dựa vào condition
   Widget _getWeatherLottie(String condition) {
+    String path = "assets/lottie/cloudy.json";
     switch (condition) {
       case "Clear":
-        return Lottie.asset(
-          "assets/lottie/sunny.json",
-          width: 140,
-          height: 140,
-        );
+        path = "assets/lottie/sunny.json";
+        break;
       case "Clouds":
-        return Lottie.asset(
-          "assets/lottie/cloudy.json",
-          width: 140,
-          height: 140,
-        );
+        path = "assets/lottie/cloudy.json";
+        break;
       case "Rain":
-        return Lottie.asset("assets/lottie/rain.json", width: 140, height: 140);
+        path = "assets/lottie/rain.json";
+        break;
       case "Thunderstorm":
-        return Lottie.asset(
-          "assets/lottie/thunderstorm.json",
-          width: 140,
-          height: 140,
-        );
-      default:
-        return Lottie.asset(
-          "assets/lottie/cloudy.json",
-          width: 140,
-          height: 140,
-        );
+        path = "assets/lottie/thunderstorm.json";
+        break;
     }
+    return Lottie.asset(path, width: 140, height: 140);
   }
 
   @override
@@ -85,13 +72,14 @@ class _WeatherPageState extends State<WeatherPage> {
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
+                    // City & Date
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           _weather!["city"],
                           style: const TextStyle(
-                            fontSize: 28,
+                            fontSize: 25,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -100,14 +88,13 @@ class _WeatherPageState extends State<WeatherPage> {
                           "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
                           style: const TextStyle(
                             fontSize: 16,
-                            color: Colors.black87, // đậm hơn để nhìn rõ
+                            color: Colors.black87,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 10),
 
                     // Main weather card
                     Card(
@@ -170,7 +157,7 @@ class _WeatherPageState extends State<WeatherPage> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Weather details (2 cột)
+                    // Weather details
                     Wrap(
                       spacing: 12,
                       runSpacing: 12,
@@ -179,17 +166,41 @@ class _WeatherPageState extends State<WeatherPage> {
                           lottiePath: "assets/lottie/rain.json",
                           title: "Độ ẩm",
                           value: "${_weather!["humidity"]}%",
+                          titleStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          valueStyle: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         _WeatherInfoCard(
                           lottiePath: "assets/lottie/cloudy.json",
                           title: "Chỉ số AQI",
                           value: "${_weather!["aqi"]}",
+                          titleStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          valueStyle: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         _WeatherInfoCard(
                           lottiePath: "assets/lottie/sunny.json",
                           title: "Lời khuyên",
                           value: _weather!["advice"],
                           big: true,
+                          titleStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          valueStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                          ),
                         ),
                       ],
                     ),
@@ -210,7 +221,10 @@ class _WeatherPageState extends State<WeatherPage> {
                         ),
                         title: const Text(
                           "Dự báo ngày mai",
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
                         ),
                         subtitle: const Text("36° / 27°"),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 18),
@@ -224,16 +238,21 @@ class _WeatherPageState extends State<WeatherPage> {
 }
 
 class _WeatherInfoCard extends StatelessWidget {
+  final String lottiePath;
   final String title;
   final String value;
-  final String? lottiePath;
   final bool big;
+  final TextStyle? titleStyle;
+  final TextStyle? valueStyle;
 
   const _WeatherInfoCard({
+    super.key,
+    required this.lottiePath,
     required this.title,
     required this.value,
-    this.lottiePath,
     this.big = false,
+    this.titleStyle,
+    this.valueStyle,
   });
 
   @override
@@ -249,30 +268,19 @@ class _WeatherInfoCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (lottiePath != null)
-            Lottie.asset(lottiePath!, width: 36, height: 36),
+          Lottie.asset(lottiePath, width: 40, height: 40),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Colors.black54,
-                    height: 1.2,
-                  ),
-                ),
+                Text(title, style: titleStyle ?? const TextStyle(fontSize: 16)),
                 const SizedBox(height: 4),
                 Text(
                   value,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: valueStyle ?? const TextStyle(fontSize: 18),
                 ),
               ],
             ),
