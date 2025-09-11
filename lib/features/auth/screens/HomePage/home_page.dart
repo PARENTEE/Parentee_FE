@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:parentee_fe/features/auth/screens/HomePage/Notification/notification.dart';
 import 'package:parentee_fe/features/auth/widgets/bottom_nav.dart';
 import 'package:weather_icons/weather_icons.dart';
+import 'package:parentee_fe/features/auth/screens/HomePage/Weather/weather.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -14,7 +15,11 @@ class HomePage extends StatelessWidget {
       "label": "Bộ theo dõi",
       "page": null,
     },
-    {"icon": "assets/images/weather.png", "label": "Thời tiết", "page": null},
+    {
+      "icon": "assets/images/weather.png",
+      "label": "Thời tiết",
+      "page": const WeatherPage(),
+    },
     {"icon": "assets/images/drugs.png", "label": "Thuốc", "page": null},
     {"icon": "assets/images/nutrient.png", "label": "Dinh dưỡng", "page": null},
   ];
