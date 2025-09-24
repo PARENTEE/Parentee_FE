@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:parentee_fe/features/auth/screens/Chatbot/chat_topics_page.dart';
 import 'package:parentee_fe/features/auth/screens/HomePage/Notification/notification.dart';
+import 'package:parentee_fe/features/auth/screens/NutrientPage/nutrient_page.dart';
 import 'package:parentee_fe/features/auth/widgets/bottom_nav.dart';
 import 'package:weather_icons/weather_icons.dart';
 import 'package:parentee_fe/features/auth/screens/HomePage/Weather/weather.dart';
@@ -21,7 +23,11 @@ class HomePage extends StatelessWidget {
       "page": const WeatherPage(),
     },
     {"icon": "assets/images/drugs.png", "label": "Thuốc", "page": null},
-    {"icon": "assets/images/nutrient.png", "label": "Dinh dưỡng", "page": null},
+    {
+      "icon": "assets/images/nutrient.png",
+      "label": "Dinh dưỡng",
+      "page": const NutrientPage(),
+    },
   ];
 
   // Banner (carousel)
@@ -71,8 +77,9 @@ class HomePage extends StatelessWidget {
           backgroundColor: Colors.transparent,
           elevation: 0,
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Trợ lý AI chưa có trang")),
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ChatTopicsPage()),
             );
           },
           child: Image.asset("assets/images/chatbot_1.png"),

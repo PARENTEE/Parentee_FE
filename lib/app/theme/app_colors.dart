@@ -6,4 +6,6 @@ class AppColors {
   static const Color background = Color(0xFFF5F5F5); // Màu nền
   static const Color textDark = Color(0xFF333333);
   static const Color textLight = Color(0xFFFFFFFF);
+  static const Color chatMessage = Color(0xFFF2F2F2);
+  static const Color chatMessageReply = Color(0xFFC4C4C4);
 }
