@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parentee_fe/app/theme/app_colors.dart';
 import 'package:parentee_fe/features/auth/screens/HomePage/home_page.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/onboarding-page.dart';
 
@@ -15,8 +16,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Onboarding Demo',
       theme: ThemeData(
-        fontFamily: "Roboto",
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.primary_button,
+        ).copyWith(background: Colors.white, surface: Colors.white),
+        scaffoldBackgroundColor: Colors.white,
+        useMaterial3: true,
       ),
       // Trang khởi động là OnboardingPage
       home: const OnboardingPage(),
