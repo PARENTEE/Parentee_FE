@@ -75,6 +75,7 @@ class HospitalDetailPage extends StatelessWidget {
                       border: Border.all(color: Colors.orange, width: 1),
                       borderRadius: BorderRadius.circular(8),
                       color: Colors.orange.shade50,
+                      boxShadow: const [],
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,12 +101,14 @@ class HospitalDetailPage extends StatelessWidget {
                   const SizedBox(height: 8),
 
                   Card(
+                    elevation: 0,
                     child: ListTile(
                       leading: const Icon(Icons.location_on, color: Colors.red),
                       title: Text(hospital.address),
                     ),
                   ),
                   Card(
+                    elevation: 0,
                     child: ListTile(
                       leading: const Icon(Icons.phone, color: Colors.green),
                       title: Text(hospital.phone),
@@ -116,6 +119,7 @@ class HospitalDetailPage extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           foregroundColor: Colors.white,
+                          elevation: 0,
                         ),
                       ),
                     ),

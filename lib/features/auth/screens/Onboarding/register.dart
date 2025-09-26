@@ -26,6 +26,7 @@ class _RegisterPageState extends State<RegisterPage> {
             children: [
               SizedBox(height: isSmall ? 20 : 40),
 
+              // Title
               Text(
                 "Đăng ký tài khoản",
                 style: TextStyle(
@@ -35,12 +36,13 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               SizedBox(height: isSmall ? 8 : 12),
 
+              // Lottie
               Lottie.asset(
                 "assets/lottie/register.json",
                 height: isSmall ? 180 : 240,
               ),
-
               SizedBox(height: isSmall ? 8 : 12),
+
               Text(
                 "Tạo tài khoản để sử dụng dịch vụ.",
                 style: TextStyle(
@@ -121,6 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               SizedBox(height: isSmall ? 12 : 16),
 
+              // Đã có tài khoản
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
