@@ -100,6 +100,8 @@ flutter:
     - assets/images/homepage/family.jpg
     - assets/images/homepage/happiness.jpg
     - assets/images/homepage/healthy_parenting.jpg
+    - assets/images/hospital/hospital_2.jpg
+    - assets/images/hospital/hospital_1.jpg
 
     - assets/lottie/
     - assets/lottie/chatbot.json

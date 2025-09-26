@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:parentee_fe/data/hospital_data.dart';
+import 'package:parentee_fe/features/auth/screens/CallPage/hospital_list_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class BottomNav extends StatefulWidget {
@@ -14,20 +16,37 @@ class _BottomNavState extends State<BottomNav> {
 
   final List<String> _routes = ["/home", "/explore", "/baby", "/sos", "/info"];
 
-  void _onTap(int index) async {
-    if (index == 3) {
-      // SOS chỉ mở dialer, không chuyển trang
-      final Uri callUri = Uri(scheme: 'tel', path: '113');
+  // void _onTap(int index) async {
+  //   if (index == 3) {
+  //     // SOS chỉ mở dialer, không chuyển trang
+  //     final Uri callUri = Uri(scheme: 'tel', path: '113');
+  //
+  //     if (await canLaunchUrl(callUri)) {
+  //       await launchUrl(
+  //         callUri,
+  //         mode: LaunchMode.externalApplication, // mở dialer thật
+  //       );
+  //     } else {
+  //       throw 'Không mở được ứng dụng gọi điện';
+  //     }
+  //     return; // đảm bảo không chạy Navigator nữa
+  //   }
+  //
+  //   setState(() {
+  //     _currentIndex = index;
+  //   });
+  //   Navigator.pushReplacementNamed(context, _routes[index]);
+  // }
 
-      if (await canLaunchUrl(callUri)) {
-        await launchUrl(
-          callUri,
-          mode: LaunchMode.externalApplication, // mở dialer thật
-        );
-      } else {
-        throw 'Không mở được ứng dụng gọi điện';
-      }
-      return; // đảm bảo không chạy Navigator nữa
+  void _onTap(int index) {
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => HospitalListPage(hospitals: hospitals),
+        ),
+      );
+      return;
     }
 
     setState(() {
