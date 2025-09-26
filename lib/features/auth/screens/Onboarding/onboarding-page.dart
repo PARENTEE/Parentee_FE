@@ -76,7 +76,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               ? 120
                               : 250,
                     ),
-
                 const SizedBox(height: 30),
                 Text(
                   page["title"]!,
@@ -102,25 +101,40 @@ class _OnboardingPageState extends State<OnboardingPage> {
               ? Container(
                 height: 80,
                 width: double.infinity,
-                color: AppColors.primary_button,
-                child: TextButton(
-                  child: const Text(
-                    "Bắt đầu",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginPage(),
+                color: Colors.white, // nền trắng
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Center(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary_button,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                    );
-                  },
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginPage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "Bắt đầu",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ),
                 ),
               )
               : Container(
                 height: 80,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
+                color: Colors.white, // nền trắng
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

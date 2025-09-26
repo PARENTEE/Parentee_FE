@@ -61,7 +61,7 @@ class _ChatPageState extends State<ChatPage> {
           // Tin nhắn
           Expanded(
             child: ListView.builder(
-              reverse: true, // 👉 tin nhắn trôi từ dưới lên
+              reverse: true, // tin nhắn trôi từ dưới lên
               padding: const EdgeInsets.all(16),
               itemCount: _messages.length,
               itemBuilder: (context, index) {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
 import 'package:parentee_fe/features/auth/screens/MedicinePage/add_medicine.dart';
-import 'package:parentee_fe/features/auth/screens/NutrientPage/add_food.dart';
 
 class MedicinePage extends StatelessWidget {
   const MedicinePage({super.key});
@@ -87,7 +86,7 @@ class MedicinePage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary_button,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),

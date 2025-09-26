@@ -102,6 +102,10 @@ flutter:
     - assets/images/homepage/healthy_parenting.jpg
     - assets/images/hospital/hospital_2.jpg
     - assets/images/hospital/hospital_1.jpg
+    - assets/images/carousel/carousel_1.jpg
+    - assets/images/carousel/carousel_2.jpg
+    - assets/images/carousel/carousel_3.jpg
+    - assets/images/article_photo/article_1.jpg
 
     - assets/lottie/
     - assets/lottie/chatbot.json

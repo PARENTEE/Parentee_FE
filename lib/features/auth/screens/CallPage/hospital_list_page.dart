@@ -27,7 +27,7 @@ class HospitalListPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => HospitalDetailPage(hospital: hospitals[0]),
+                  builder: (_) => HospitalDetailPage(hospital: hospital),
                 ),
               );
             },
