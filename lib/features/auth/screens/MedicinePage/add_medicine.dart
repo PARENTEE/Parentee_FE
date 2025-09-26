@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
 
-class AddFoodPage extends StatelessWidget {
-  const AddFoodPage({super.key});
+class AddMedicinePage extends StatelessWidget {
+  const AddMedicinePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController foodController = TextEditingController();
+    final TextEditingController medicineController = TextEditingController();
     final TextEditingController noteController = TextEditingController();
     final ValueNotifier<int> quantity = ValueNotifier<int>(1);
 
@@ -20,7 +20,7 @@ class AddFoodPage extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          "Theo Dõi Dinh Dưỡng",
+          "Theo Dõi Thuốc",
           style: TextStyle(
             color: Colors.black87,
             fontWeight: FontWeight.w600,
@@ -62,14 +62,14 @@ class AddFoodPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Đồ ăn
+              // Tên thuốc
               const Text(
-                "Đồ ăn",
+                "Tên thuốc",
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 8),
               TextFormField(
-                controller: foodController,
+                controller: medicineController,
                 decoration: InputDecoration(
                   hintText: "Nhập để thêm",
                   border: OutlineInputBorder(
@@ -92,6 +92,61 @@ class AddFoodPage extends StatelessWidget {
               _QuantityBox(controller: quantity),
               const SizedBox(height: 20),
 
+              // Hàm lượng / liều lượng mỗi đơn vị
+              const Text(
+                "Hàm lượng / liều lượng mỗi đơn vị",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 8),
+
+              Row(
+                children: [
+                  // Ô nhập số
+                  Expanded(
+                    flex: 2,
+                    child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: "Nhập số",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Dropdown chọn đơn vị
+                  Expanded(
+                    flex: 1,
+                    child: DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 12,
+                        ),
+                      ),
+                      hint: const Text("Đơn vị"),
+                      items: const [
+                        DropdownMenuItem(value: "mg", child: Text("mg")),
+                        DropdownMenuItem(value: "ml", child: Text("ml")),
+                        DropdownMenuItem(value: "viên", child: Text("viên")),
+                      ],
+                      onChanged: (value) {
+                        // Xử lý chọn đơn vị
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
               // Note
               const Text(
                 "Note",
@@ -104,7 +159,7 @@ class AddFoodPage extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: "Nhập ghi chú...",
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   contentPadding: const EdgeInsets.all(12),
                 ),
@@ -118,7 +173,7 @@ class AddFoodPage extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     final foodData = {
-                      "food": foodController.text,
+                      "food": medicineController.text,
                       "quantity": quantity.value,
                       "note": noteController.text,
                       "date": DateTime.now().toString(),
@@ -129,7 +184,7 @@ class AddFoodPage extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary_button,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(30),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
