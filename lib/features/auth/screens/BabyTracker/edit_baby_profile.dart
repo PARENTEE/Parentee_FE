@@ -18,7 +18,7 @@ class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
   String selectedHeightUnit = "cm";
   String selectedWeightUnit = "kg";
 
-  final List<String> ages = List.generate(20, (i) => "${i + 1} tuổi");
+  final List<String> ages = List.generate(12, (i) => "${i + 1} tháng");
   final List<String> heightUnits = ["cm", "inch"];
   final List<String> weightUnits = ["kg", "lbs"];
 
@@ -296,7 +296,7 @@ class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
                   backgroundColor: Colors.redAccent.shade100,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
                 onPressed: () {

@@ -18,25 +18,38 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size; // lấy kích thước màn hình
+    final isSmall = size.height < 700; // điện thoại nhỏ
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(isSmall ? 16 : 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 60),
+              SizedBox(height: isSmall ? 40 : 60),
 
-              const Text(
+              Text(
                 "Đăng Nhập",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: isSmall ? 20 : 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
 
-              Lottie.asset("assets/lottie/stork.json", height: 250),
+              SizedBox(height: isSmall ? 8 : 12),
+              Lottie.asset(
+                "assets/lottie/stork.json",
+                height: isSmall ? 180 : 230,
+              ),
 
-              const Text(
+              Text(
                 "Đăng nhập để sử dụng dịch vụ.",
-                style: TextStyle(fontSize: 16, color: Colors.black54),
+                style: TextStyle(
+                  fontSize: isSmall ? 14 : 16,
+                  color: Colors.black54,
+                ),
               ),
               const SizedBox(height: 20),
 
@@ -45,13 +58,16 @@ class _LoginPageState extends State<LoginPage> {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: EdgeInsets.symmetric(vertical: isSmall ? 12 : 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
                   icon: const Icon(FontAwesomeIcons.google, color: Colors.red),
-                  label: const Text("Đăng nhập với Google"),
+                  label: Text(
+                    "Đăng nhập với Google",
+                    style: TextStyle(fontSize: isSmall ? 14 : 16),
+                  ),
                   onPressed: () {},
                 ),
               ),
@@ -73,15 +89,16 @@ class _LoginPageState extends State<LoginPage> {
               /// Email input
               TextField(
                 controller: _emailController,
+                style: TextStyle(fontSize: isSmall ? 14 : 16),
                 decoration: InputDecoration(
                   labelText: "Email",
                   hintText: "example@email.com",
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 14,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: isSmall ? 10 : 14,
                   ),
                 ),
               ),
@@ -91,21 +108,22 @@ class _LoginPageState extends State<LoginPage> {
               TextField(
                 controller: _passwordController,
                 obscureText: true,
+                style: TextStyle(fontSize: isSmall ? 14 : 16),
                 decoration: InputDecoration(
                   labelText: "Mật khẩu",
                   hintText: "tối thiểu 8 ký tự",
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 14,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: isSmall ? 10 : 14,
                   ),
                   suffixIcon: const Icon(Icons.visibility_off),
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 24),
 
               /// Nút Đăng nhập
               SizedBox(
@@ -113,9 +131,9 @@ class _LoginPageState extends State<LoginPage> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary_button,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: isSmall ? 12 : 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
                   onPressed: () {
@@ -126,20 +144,26 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     );
                   },
-                  child: const Text(
+                  child: Text(
                     "Đăng nhập",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: isSmall ? 16 : 18,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
 
               /// Link đăng ký
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Không có tài khoản? "),
+                  Text(
+                    "Không có tài khoản? ",
+                    style: TextStyle(fontSize: isSmall ? 13 : 15),
+                  ),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -149,11 +173,12 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       "Đăng ký ngay",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
+                        fontSize: isSmall ? 13 : 15,
                       ),
                     ),
                   ),

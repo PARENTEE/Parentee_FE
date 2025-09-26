@@ -39,9 +39,9 @@ class HomePage extends StatelessWidget {
 
   // Banner (carousel)
   static final List<String> banners = [
-    "assets/images/homepage/family.jpg",
-    "assets/images/homepage/bond.jpg",
-    "assets/images/homepage/connections.jpg",
+    "assets/images/carousel/carousel_1.jpg",
+    "assets/images/carousel/carousel_2.jpg",
+    "assets/images/carousel/carousel_3.jpg",
   ];
 
   static final List<Article> articles = [
@@ -85,7 +85,7 @@ class HomePage extends StatelessWidget {
       ],
     ),
     Article(
-      image: "assets/images/homepage/bond.jpg",
+      image: "assets/images/article_photo/article_1.jpg",
       title: "Bí quyết nuôi dạy con khỏe mạnh",
       sections: [
         ArticleSection(

@@ -14,67 +14,63 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isSmall = size.height < 700;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: EdgeInsets.all(isSmall ? 16 : 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 8),
-              const Text(
+              SizedBox(height: isSmall ? 20 : 40),
+
+              Text(
                 "Đăng ký tài khoản",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: isSmall ? 20 : 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              const SizedBox(height: 12),
-              Lottie.asset("assets/lottie/register.json", height: 250),
-              const SizedBox(height: 12),
-              const Text(
+              SizedBox(height: isSmall ? 8 : 12),
+
+              Lottie.asset(
+                "assets/lottie/register.json",
+                height: isSmall ? 180 : 240,
+              ),
+
+              SizedBox(height: isSmall ? 8 : 12),
+              Text(
                 "Tạo tài khoản để sử dụng dịch vụ.",
-                style: TextStyle(fontSize: 16, color: Colors.black54),
+                style: TextStyle(
+                  fontSize: isSmall ? 14 : 16,
+                  color: Colors.black54,
+                ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: isSmall ? 16 : 24),
 
               // Email
-              TextField(
-                decoration: InputDecoration(
-                  labelText: "Email",
-                  hintText: "example@email.com",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
+              _buildTextField("Email", "example@email.com", isSmall: isSmall),
+              SizedBox(height: isSmall ? 12 : 16),
 
               // Username
-              TextField(
-                decoration: InputDecoration(
-                  labelText: "Tên đăng nhập",
-                  hintText: "example",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
+              _buildTextField("Tên đăng nhập", "example", isSmall: isSmall),
+              SizedBox(height: isSmall ? 12 : 16),
 
               // Phone
-              TextField(
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  labelText: "Số điện thoại",
-                  hintText: "0123456789",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
+              _buildTextField(
+                "Số điện thoại",
+                "0123456789",
+                isSmall: isSmall,
+                keyboard: TextInputType.phone,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: isSmall ? 12 : 16),
 
               // Password
               TextField(
                 obscureText: _obscurePassword,
+                style: TextStyle(fontSize: isSmall ? 14 : 16),
                 decoration: InputDecoration(
                   labelText: "Mật khẩu",
                   suffixIcon: IconButton(
@@ -90,11 +86,15 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: isSmall ? 10 : 14,
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: isSmall ? 20 : 24),
 
               // Button Đăng ký
               SizedBox(
@@ -102,43 +102,69 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary_button,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: EdgeInsets.symmetric(vertical: isSmall ? 12 : 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
                   onPressed: () {
                     // TODO: xử lý logic đăng ký
                   },
-                  child: const Text(
+                  child: Text(
                     "Đăng ký",
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: isSmall ? 15 : 16,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: isSmall ? 12 : 16),
 
-              // Chuyển về Login
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Đã có tài khoản? "),
+                  Text(
+                    "Đã có tài khoản? ",
+                    style: TextStyle(fontSize: isSmall ? 13 : 15),
+                  ),
                   GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context); // Quay lại LoginPage
-                    },
-                    child: const Text(
+                    onTap: () => Navigator.pop(context),
+                    child: Text(
                       "Đăng nhập",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
+                        fontSize: isSmall ? 13 : 15,
                       ),
                     ),
                   ),
                 ],
               ),
+              SizedBox(height: isSmall ? 16 : 20),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+    String label,
+    String hint, {
+    bool isSmall = false,
+    TextInputType? keyboard,
+  }) {
+    return TextField(
+      keyboardType: keyboard,
+      style: TextStyle(fontSize: isSmall ? 14 : 16),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: isSmall ? 10 : 14,
         ),
       ),
     );

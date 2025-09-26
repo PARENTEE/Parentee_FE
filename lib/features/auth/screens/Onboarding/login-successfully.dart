@@ -104,7 +104,7 @@ class _LoginSuccessfullyPageState extends State<LoginSuccessfullyPage>
                                 : Colors.grey, // đổi màu khi disable
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                       ),
                       child: const Text(
