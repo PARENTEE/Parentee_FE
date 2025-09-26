@@ -13,178 +13,241 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size; // lấy kích thước màn hình
-    final isSmall = size.height < 700; // điện thoại nhỏ
+    final size = MediaQuery.of(context).size;
+    final isSmall = size.height < 700;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           padding: EdgeInsets.all(isSmall ? 16 : 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: isSmall ? 40 : 60),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: isSmall ? 10 : 10),
 
-              Text(
-                "Đăng Nhập",
-                style: TextStyle(
-                  fontSize: isSmall ? 20 : 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              SizedBox(height: isSmall ? 8 : 12),
-              Lottie.asset(
-                "assets/lottie/stork.json",
-                height: isSmall ? 180 : 230,
-              ),
-
-              Text(
-                "Đăng nhập để sử dụng dịch vụ.",
-                style: TextStyle(
-                  fontSize: isSmall ? 14 : 16,
-                  color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              /// Nút login Google
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: isSmall ? 12 : 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  icon: const Icon(FontAwesomeIcons.google, color: Colors.red),
-                  label: Text(
-                    "Đăng nhập với Google",
-                    style: TextStyle(fontSize: isSmall ? 14 : 16),
-                  ),
-                  onPressed: () {},
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              Row(
-                children: const [
-                  Expanded(child: Divider(thickness: 1)),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Text("hoặc"),
-                  ),
-                  Expanded(child: Divider(thickness: 1)),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              /// Email input
-              TextField(
-                controller: _emailController,
-                style: TextStyle(fontSize: isSmall ? 14 : 16),
-                decoration: InputDecoration(
-                  labelText: "Email",
-                  hintText: "example@email.com",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: isSmall ? 10 : 14,
+                /// Tiêu đề
+                Text(
+                  "Đăng Nhập",
+                  style: TextStyle(
+                    fontSize: isSmall ? 20 : 24,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
 
-              /// Password input
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                style: TextStyle(fontSize: isSmall ? 14 : 16),
-                decoration: InputDecoration(
-                  labelText: "Mật khẩu",
-                  hintText: "tối thiểu 8 ký tự",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: isSmall ? 10 : 14,
-                  ),
-                  suffixIcon: const Icon(Icons.visibility_off),
+                SizedBox(height: isSmall ? 8 : 12),
+
+                /// Hình động Lottie
+                Lottie.asset(
+                  "assets/lottie/stork.json",
+                  height: isSmall ? 180 : 230,
                 ),
-              ),
 
-              const SizedBox(height: 24),
-
-              /// Nút Đăng nhập
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary_button,
-                    padding: EdgeInsets.symmetric(vertical: isSmall ? 12 : 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+                Text(
+                  "Đăng nhập để sử dụng dịch vụ.",
+                  style: TextStyle(
+                    fontSize: isSmall ? 14 : 16,
+                    color: Colors.black54,
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginSuccessfullyPage(),
+                ),
+
+                const SizedBox(height: 20),
+
+                /// Nút login Google
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        vertical: isSmall ? 12 : 14,
                       ),
-                    );
-                  },
-                  child: Text(
-                    "Đăng nhập",
-                    style: TextStyle(
-                      fontSize: isSmall ? 16 : 18,
-                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                     ),
+                    icon: const Icon(
+                      FontAwesomeIcons.google,
+                      color: Colors.red,
+                    ),
+                    label: Text(
+                      "Đăng nhập với Google",
+                      style: TextStyle(fontSize: isSmall ? 14 : 16),
+                    ),
+                    onPressed: () {},
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 16),
+                const SizedBox(height: 20),
 
-              /// Link đăng ký
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Không có tài khoản? ",
-                    style: TextStyle(fontSize: isSmall ? 13 : 15),
+                /// Divider "hoặc"
+                Row(
+                  children: const [
+                    Expanded(child: Divider(thickness: 1)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Text("hoặc"),
+                    ),
+                    Expanded(child: Divider(thickness: 1)),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                Text(
+                  "Sử dụng email và mật khẩu để tiếp tục",
+                  style: TextStyle(fontSize: 15, color: Colors.black54),
+                ),
+
+                const SizedBox(height: 16),
+
+                /// Email input
+                TextFormField(
+                  controller: _emailController,
+                  style: TextStyle(fontSize: isSmall ? 14 : 16),
+                  decoration: InputDecoration(
+                    labelText: "Email",
+                    hintText: "example@email.com",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: isSmall ? 10 : 14,
+                    ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterPage(),
-                        ),
-                      );
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Vui lòng nhập email";
+                    }
+                    final emailRegex = RegExp(
+                      r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
+                    ); // regex email
+                    if (!emailRegex.hasMatch(value)) {
+                      return "Email không hợp lệ";
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 16),
+
+                /// Password input
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  style: TextStyle(fontSize: isSmall ? 14 : 16),
+                  decoration: InputDecoration(
+                    labelText: "Mật khẩu",
+                    hintText: "Tối thiểu 8 ký tự",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: isSmall ? 10 : 14,
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Vui lòng nhập mật khẩu";
+                    }
+                    if (value.length < 8) {
+                      return "Mật khẩu phải từ 8 ký tự";
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 24),
+
+                /// Nút Đăng nhập
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary_button,
+                      padding: EdgeInsets.symmetric(
+                        vertical: isSmall ? 12 : 16,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginSuccessfullyPage(),
+                          ),
+                        );
+                      }
                     },
                     child: Text(
-                      "Đăng ký ngay",
+                      "Đăng nhập",
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        fontSize: isSmall ? 13 : 15,
+                        fontSize: isSmall ? 16 : 18,
+                        color: Colors.white,
                       ),
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+
+                const SizedBox(height: 16),
+
+                /// Link đăng ký
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Không có tài khoản? ",
+                      style: TextStyle(fontSize: isSmall ? 13 : 15),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterPage(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        "Đăng ký ngay",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontSize: isSmall ? 13 : 15,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
