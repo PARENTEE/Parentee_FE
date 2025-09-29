@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../app/theme/app_colors.dart';
 import 'profile_detail.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -41,14 +42,14 @@ class ProfilePage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "John Doe",
+                          "Nguyễn Văn A",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          "johndoe@gmail.com",
+                          "nguyenvana@gmail.com",
                           style: TextStyle(color: Colors.grey),
                         ),
                       ],
@@ -56,7 +57,10 @@ class ProfilePage extends StatelessWidget {
                   ),
                   // Edit icon
                   IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.deepOrange),
+                    icon: const Icon(
+                      Icons.edit,
+                      color: AppColors.primary_button,
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -72,23 +76,22 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // General section
-            _buildSectionTitle("General"),
-            _buildMenuItem(Icons.location_on_outlined, "Location"),
-            _buildMenuItem(Icons.local_shipping_outlined, "Pickup location"),
-            _buildMenuItem(Icons.inventory_2_outlined, "My orders"),
-            _buildMenuItem(Icons.qr_code_scanner, "Scan QR code"),
-            _buildMenuItem(Icons.lock_outline, "Change password"),
+            _buildSectionTitle("Chung"),
+            // _buildMenuItem(Icons.location_on_outlined, "Location"),
+            // _buildMenuItem(Icons.local_shipping_outlined, "Pickup location"),
+            _buildMenuItem(Icons.inventory_2_outlined, "Lịch sử giao dịch"),
+            // _buildMenuItem(Icons.qr_code_scanner, "Scan QR code"),
+            _buildMenuItem(Icons.lock_outline, "Đổi mật khẩu"),
 
             const SizedBox(height: 24),
 
             // Support section
-            _buildSectionTitle("Support"),
-            _buildMenuItem(Icons.chat_bubble_outline, "Need help? Let's chat"),
+            _buildSectionTitle("Hỗ trợ"),
             _buildMenuItem(
-              Icons.verified_user_outlined,
-              "Lender Protection Guarantee",
+              Icons.chat_bubble_outline,
+              "Cần trợ giúp? Chat ngay",
             ),
-            _buildMenuItem(Icons.privacy_tip_outlined, "Privacy Policy"),
+            _buildMenuItem(Icons.privacy_tip_outlined, "Chính sách bảo mật"),
 
             const SizedBox(height: 24),
 

@@ -48,13 +48,7 @@ class HospitalDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// Hình ảnh bệnh viện
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(16),
-                bottomRight: Radius.circular(16),
-              ),
-              child: _buildHospitalImage(hospital.imageUrl),
-            ),
+            ClipRRect(child: _buildHospitalImage(hospital.imageUrl)),
 
             Padding(
               padding: const EdgeInsets.all(16),

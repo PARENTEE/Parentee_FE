@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:parentee_fe/app/theme/app_colors.dart';
 import 'package:parentee_fe/data/hospital_data.dart';
+import 'package:parentee_fe/features/auth/screens/BabyTracker/baby_profile.dart';
 import 'package:parentee_fe/features/auth/screens/CallPage/hospital_list_page.dart';
+import 'package:parentee_fe/features/auth/screens/UserProfile/profile.dart';
+
+import '../screens/SearchPage/search_page.dart';
 
 class BottomNav extends StatefulWidget {
   final Widget child;
@@ -15,29 +20,18 @@ class _BottomNavState extends State<BottomNav> {
 
   final List<String> _routes = ["/home", "/explore", "/baby", "/sos", "/info"];
 
-  // void _onTap(int index) async {
-  //   if (index == 3) {
-  //     // SOS chỉ mở dialer, không chuyển trang
-  //     final Uri callUri = Uri(scheme: 'tel', path: '113');
-  //
-  //     if (await canLaunchUrl(callUri)) {
-  //       await launchUrl(
-  //         callUri,
-  //         mode: LaunchMode.externalApplication, // mở dialer thật
-  //       );
-  //     } else {
-  //       throw 'Không mở được ứng dụng gọi điện';
-  //     }
-  //     return; // đảm bảo không chạy Navigator nữa
-  //   }
-  //
-  //   setState(() {
-  //     _currentIndex = index;
-  //   });
-  //   Navigator.pushReplacementNamed(context, _routes[index]);
-  // }
-
   void _onTap(int index) {
+    if (index == 1) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => SearchPage()));
+    }
+
+    if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => BabyProfilePage()),
+      );
+    }
+
     if (index == 3) {
       Navigator.push(
         context,
@@ -46,6 +40,9 @@ class _BottomNavState extends State<BottomNav> {
         ),
       );
       return;
+    }
+    if (index == 4) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
     }
 
     setState(() {
@@ -61,7 +58,7 @@ class _BottomNavState extends State<BottomNav> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.deepOrange,
+        selectedItemColor: AppColors.primary_button,
         unselectedItemColor: Colors.grey,
         onTap: _onTap,
         items: const [
@@ -70,7 +67,7 @@ class _BottomNavState extends State<BottomNav> {
           BottomNavigationBarItem(icon: Icon(Icons.child_care), label: "Em bé"),
           BottomNavigationBarItem(icon: Icon(Icons.sos), label: "Khẩn cấp"),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
+            icon: Icon(Icons.person_2),
             label: "Thông tin",
           ),
         ],
