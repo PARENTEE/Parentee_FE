@@ -142,7 +142,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       style: TextButton.styleFrom(
                         foregroundColor: AppColors.primary_button,
                       ),
-                      child: const Text("Bỏ qua"),
+                      child: const Text(
+                        "Bỏ qua",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       onPressed: () {
                         Navigator.pushReplacement(
                           context,
@@ -173,7 +176,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       style: TextButton.styleFrom(
                         foregroundColor: AppColors.primary_button,
                       ),
-                      child: const Text("Tiếp"),
+                      child: const Text(
+                        "Tiếp",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       onPressed: () {
                         _pageController.nextPage(
                           duration: const Duration(milliseconds: 300),
