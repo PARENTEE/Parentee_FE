@@ -43,11 +43,13 @@ dependencies:
   lucide_icons_flutter: ^3.1.0
   http: ^1.2.0
   url_launcher: ^6.3.0
+  table_calendar: ^3.0.9
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  intl: ^0.19.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

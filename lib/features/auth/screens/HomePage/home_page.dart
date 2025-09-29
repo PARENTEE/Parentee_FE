@@ -7,6 +7,7 @@ import 'package:parentee_fe/features/auth/screens/Chatbot/chat_topics_page.dart'
 import 'package:parentee_fe/features/auth/screens/HomePage/Notification/notification.dart';
 import 'package:parentee_fe/features/auth/screens/MedicinePage/medicine_page.dart';
 import 'package:parentee_fe/features/auth/screens/NutrientPage/nutrient_page.dart';
+import 'package:parentee_fe/features/auth/screens/UserProfile/profile.dart';
 import 'package:parentee_fe/features/auth/widgets/bottom_nav.dart';
 import 'package:parentee_fe/features/auth/screens/HomePage/Weather/weather.dart';
 
@@ -228,31 +229,44 @@ Bữa tối:
                 // Header
                 Row(
                   children: [
-                    const CircleAvatar(
-                      radius: 24,
-                      backgroundImage: AssetImage(
-                        "assets/images/homepage/family.jpg",
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ProfilePage(),
+                          ),
+                        );
+                      },
+                      child: const Row(
                         children: [
-                          Text(
-                            "Chào mừng! Admin",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                          CircleAvatar(
+                            radius: 24,
+                            backgroundImage: AssetImage(
+                              "assets/images/homepage/family.jpg",
                             ),
                           ),
-                          Text(
-                            "Miễn phí",
-                            style: TextStyle(color: Colors.grey),
+                          SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Chào mừng! Admin",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                "Miễn phí",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
+                    const Spacer(),
                     // Icon notification + badge đỏ
                     Stack(
                       clipBehavior: Clip.none,
