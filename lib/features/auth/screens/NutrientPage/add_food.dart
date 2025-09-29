@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
 
+import 'nutrient_dashboard.dart';
+
 class AddFoodPage extends StatelessWidget {
   const AddFoodPage({super.key});
 
@@ -124,7 +126,12 @@ class AddFoodPage extends StatelessWidget {
                       "date": DateTime.now().toString(),
                     };
 
-                    Navigator.pop(context, foodData);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const NutrientDashboardPage(),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary_button,

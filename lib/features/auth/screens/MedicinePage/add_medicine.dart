@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
+import 'package:parentee_fe/features/auth/screens/MedicinePage/medicine_dashboard.dart';
 
 class AddMedicinePage extends StatelessWidget {
   const AddMedicinePage({super.key});
@@ -173,13 +174,18 @@ class AddMedicinePage extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     final foodData = {
-                      "food": medicineController.text,
+                      "name": medicineController.text,
                       "quantity": quantity.value,
                       "note": noteController.text,
                       "date": DateTime.now().toString(),
                     };
 
-                    Navigator.pop(context, foodData);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const MedicineDashboardPage(),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary_button,
