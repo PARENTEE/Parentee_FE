@@ -22,8 +22,8 @@ class MyApp extends StatelessWidget {
         ).copyWith(background: Colors.white, surface: Colors.white),
         scaffoldBackgroundColor: Colors.white,
         useMaterial3: true,
-        // textTheme: GoogleFonts.robotoTextTheme(),
-        textTheme: GoogleFonts.nunitoSansTextTheme(),
+        textTheme: GoogleFonts.robotoTextTheme(),
+        // textTheme: GoogleFonts.nunitoSansTextTheme(),
       ),
       // Trang khởi động là OnboardingPage
       home: const OnboardingPage(),
