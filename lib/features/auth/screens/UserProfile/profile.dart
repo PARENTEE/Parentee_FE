@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:parentee_fe/features/auth/screens/Onboarding/onboarding-page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../app/theme/app_colors.dart';
 import 'profile_detail.dart';
 
@@ -107,7 +109,15 @@ class ProfilePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.remove('auth_token');
+
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const OnboardingPage()),
+                  );
+                },
                 child: const Text("Đăng Xuất"),
               ),
             ),

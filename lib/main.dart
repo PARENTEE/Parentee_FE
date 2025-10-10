@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
 import 'package:parentee_fe/features/auth/screens/HomePage/home_page.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/onboarding-page.dart';
+import 'package:parentee_fe/features/auth/wrapper/auth_wrapper.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
         // textTheme: GoogleFonts.nunitoSansTextTheme(),
       ),
       // Trang khởi động là OnboardingPage
-      home: const OnboardingPage(),
+      home: const AuthWrapper(),
 
       routes: {"/home": (context) => const HomePage()},
     );

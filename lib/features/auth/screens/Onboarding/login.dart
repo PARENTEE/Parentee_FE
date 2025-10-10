@@ -4,6 +4,9 @@ import 'package:lottie/lottie.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/login-successfully.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/register.dart';
+import 'package:parentee_fe/services/api_service.dart';
+import 'package:parentee_fe/services/popup_toast_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -196,14 +199,33 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginSuccessfullyPage(),
-                          ),
+                        final email = _emailController.text.trim();
+                        final password = _passwordController.text.trim();
+
+                        // show loading
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (_) => const Center(child: CircularProgressIndicator()),
                         );
+
+                        final result = await ApiService.login(email, password);
+                        Navigator.pop(context); // remove loading dialog
+                        if (result['success']) {
+                          final token = result['token'];
+
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setString('auth_token', token);
+
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => const LoginSuccessfullyPage()),
+                          );
+                        } else {
+                          PopUpToastService.showErrorToast(context, result['message']);
+                        }
                       }
                     },
                     child: Text(

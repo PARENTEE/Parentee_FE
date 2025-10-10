@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
+import 'package:parentee_fe/services/api_service.dart';
+import 'package:parentee_fe/services/popup_toast_service.dart';
+import 'package:toasty_box/toast_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -11,6 +14,13 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   bool _obscurePassword = true;
+
+  // Controllers for input fields
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -26,44 +36,30 @@ class _RegisterPageState extends State<RegisterPage> {
             children: [
               SizedBox(height: isSmall ? 20 : 40),
 
-              // Title
-              Text(
-                "Đăng ký tài khoản",
-                style: TextStyle(
-                  fontSize: isSmall ? 20 : 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: isSmall ? 8 : 12),
-
-              // Lottie
-              Lottie.asset(
-                "assets/lottie/register.json",
-                height: isSmall ? 180 : 240,
-              ),
-              SizedBox(height: isSmall ? 8 : 12),
-
-              Text(
-                "Tạo tài khoản để sử dụng dịch vụ.",
-                style: TextStyle(
-                  fontSize: isSmall ? 14 : 16,
-                  color: Colors.black54,
-                ),
-              ),
-              SizedBox(height: isSmall ? 16 : 24),
-
               // Email
-              _buildTextField("Email", "example@email.com", isSmall: isSmall),
+              _buildTextField(
+                "Email",
+                "example@email.com",
+                controller: _emailController,
+                isSmall: isSmall,
+                keyboard: TextInputType.emailAddress,
+              ),
               SizedBox(height: isSmall ? 12 : 16),
 
-              // Username
-              _buildTextField("Tên đăng nhập", "example", isSmall: isSmall),
+              // Full name
+              _buildTextField(
+                "Họ và Tên",
+                "Nguyễn Văn A",
+                controller: _nameController,
+                isSmall: isSmall,
+              ),
               SizedBox(height: isSmall ? 12 : 16),
 
               // Phone
               _buildTextField(
                 "Số điện thoại",
                 "0123456789",
+                controller: _phoneController,
                 isSmall: isSmall,
                 keyboard: TextInputType.phone,
               ),
@@ -71,6 +67,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
               // Password
               TextField(
+                controller: _passwordController,
                 obscureText: _obscurePassword,
                 style: TextStyle(fontSize: isSmall ? 14 : 16),
                 decoration: InputDecoration(
@@ -109,8 +106,43 @@ class _RegisterPageState extends State<RegisterPage> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  onPressed: () {
-                    // TODO: xử lý logic đăng ký
+                  onPressed: () async {
+                    final email = _emailController.text.trim();
+                    final fullName = _nameController.text.trim();
+                    final phone = _phoneController.text.trim();
+                    final password = _passwordController.text.trim();
+
+                    // show loading
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder:
+                          (_) =>
+                              const Center(child: CircularProgressIndicator()),
+                    );
+
+                    final result = await ApiService.register(
+                      email,
+                      fullName,
+                      phone,
+                      password,
+                    );
+
+                    // remove loading
+                    Navigator.pop(context);
+
+                    if (result['success']) {
+                      PopUpToastService.showSuccessToast(
+                        context,
+                        'Đăng ký thành công!',
+                      );
+                      Navigator.pop(context); // Quay lại màn hình đăng nhập
+                    } else {
+                      PopUpToastService.showErrorToast(
+                        context,
+                        result['message'] ?? 'Đăng ký thất bại!',
+                      );
+                    }
                   },
                   child: Text(
                     "Đăng ký",
@@ -157,8 +189,10 @@ class _RegisterPageState extends State<RegisterPage> {
     String hint, {
     bool isSmall = false,
     TextInputType? keyboard,
+    TextEditingController? controller,
   }) {
     return TextField(
+      controller: controller,
       keyboardType: keyboard,
       style: TextStyle(fontSize: isSmall ? 14 : 16),
       decoration: InputDecoration(
