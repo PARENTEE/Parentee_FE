@@ -7,6 +7,7 @@ import 'package:parentee_fe/features/auth/screens/Onboarding/register.dart';
 import 'package:parentee_fe/services/api_service.dart';
 import 'package:parentee_fe/services/auth_service.dart';
 import 'package:parentee_fe/services/popup_toast_service.dart';
+import 'package:parentee_fe/services/shared_preferences_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -88,31 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(fontSize: isSmall ? 14 : 16),
                     ),
                     onPressed: () async {
-                      // show loading
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (_) => const Center(child: CircularProgressIndicator()),
-                      );
-                      // Process Oauth2 Sign in screen and call API to get token from BE
-                      final result = await AuthService.signInWithGoogle();
-
-                      // remove loading dialog
-                      Navigator.pop(context);
-
-                      if (result['success']) {
-                        final token = result['data'];
-
-                        final prefs = await SharedPreferences.getInstance();
-                        await prefs.setString('auth_token', token);
-
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => const LoginSuccessfullyPage()),
-                        );
-                      } else {
-                        PopUpToastService.showErrorToast(context, result['message']);
-                      }
+                      await _runLoginProcess(AuthService.signInWithGoogle);
                     },
                   ),
                 ),
@@ -231,28 +208,8 @@ class _LoginPageState extends State<LoginPage> {
                         final email = _emailController.text.trim();
                         final password = _passwordController.text.trim();
 
-                        // show loading
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (_) => const Center(child: CircularProgressIndicator()),
-                        );
-
-                        final result = await ApiService.login(email, password);
-                        Navigator.pop(context); // remove loading dialog
-                        if (result['success']) {
-                          final token = result['data'];
-
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.setString('auth_token', token);
-
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => const LoginSuccessfullyPage()),
-                          );
-                        } else {
-                          PopUpToastService.showErrorToast(context, result['message']);
-                        }
+                        // Run Login process
+                        await _runLoginProcess(() => ApiService.login(email, password));
                       }
                     },
                     child: Text(
@@ -301,5 +258,43 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _runLoginProcess(Future<Map<String, dynamic>> Function() action) async {
+    // show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final result = await action(); // await the passed function
+
+
+      if (result['success']) {
+        final token = result['data'];
+
+        // Save token
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', token);
+
+        // Fetch and save user info
+        // await SharedPreferencesService.fetchAndSaveUser(token);
+        // print(SharedPreferencesService.getUserFromPrefs());
+        Navigator.pop(context); // remove loading
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginSuccessfullyPage()),
+        );
+      } else {
+        PopUpToastService.showErrorToast(context, result['message']);
+        Navigator.pop(context); // remove loading
+      }
+    } catch (e) {
+      Navigator.pop(context); // ensure dialog is closed
+      PopUpToastService.showErrorToast(context, '$e');
+    }
   }
 }

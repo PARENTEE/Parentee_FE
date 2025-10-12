@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 class ApiService {
   static const String baseUrl = 'http://10.0.2.2:5000/api/v1';
 
-
   // --------------------------
   // 🔹 API Endpoints
   // --------------------------
@@ -43,14 +42,30 @@ class ApiService {
     );
   }
 
+  static Future<Map<String, dynamic>> getUserProfile(String token) async {
+    return _sendRequest(
+      'user/current',
+      token: token,
+      method: 'GET',
+    );
+  }
+
   /// 🔹 Generic request handler
   static Future<Map<String, dynamic>> _sendRequest(
       String endpoint, {
         String method = 'GET',
+        String? token,
         Map<String, dynamic>? body,
       })
   async {
     final url = Uri.parse('$baseUrl/$endpoint');
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
 
     try {
       http.Response response;
@@ -61,7 +76,7 @@ class ApiService {
           response = await http
               .post(
             url,
-            headers: {'Content-Type': 'application/json'},
+            headers: headers,
             body: body != null ? jsonEncode(body) : null,
           )
               .timeout(const Duration(seconds: 10));
@@ -71,7 +86,7 @@ class ApiService {
           response = await http
               .put(
             url,
-            headers: {'Content-Type': 'application/json'},
+            headers: headers,
             body: body != null ? jsonEncode(body) : null,
           )
               .timeout(const Duration(seconds: 10));
@@ -81,7 +96,7 @@ class ApiService {
           response = await http
               .delete(
             url,
-            headers: {'Content-Type': 'application/json'},
+            headers: headers,
             body: body != null ? jsonEncode(body) : null,
           )
               .timeout(const Duration(seconds: 10));
@@ -96,7 +111,7 @@ class ApiService {
       // 🔹 Parse response
       final jsonBody = _tryDecodeJson(response.body);
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        return {'success': true, 'data': jsonBody};
+        return {'success': true, 'data': jsonBody['data']};
       } else {
         final message = jsonBody['reason'] ??
             jsonBody['message'] ??
