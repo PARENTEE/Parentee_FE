@@ -5,6 +5,7 @@ import 'package:parentee_fe/app/theme/app_colors.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/login-successfully.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/register.dart';
 import 'package:parentee_fe/services/api_service.dart';
+import 'package:parentee_fe/services/auth_service.dart';
 import 'package:parentee_fe/services/popup_toast_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -86,7 +87,33 @@ class _LoginPageState extends State<LoginPage> {
                       "Đăng nhập với Google",
                       style: TextStyle(fontSize: isSmall ? 14 : 16),
                     ),
-                    onPressed: () {},
+                    onPressed: () async {
+                      // show loading
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (_) => const Center(child: CircularProgressIndicator()),
+                      );
+                      // Process Oauth2 Sign in screen and call API to get token from BE
+                      final result = await AuthService.signInWithGoogle();
+
+                      // remove loading dialog
+                      Navigator.pop(context);
+
+                      if (result['success']) {
+                        final token = result['data'];
+
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setString('auth_token', token);
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => const LoginSuccessfullyPage()),
+                        );
+                      } else {
+                        PopUpToastService.showErrorToast(context, result['message']);
+                      }
+                    },
                   ),
                 ),
 
@@ -214,7 +241,7 @@ class _LoginPageState extends State<LoginPage> {
                         final result = await ApiService.login(email, password);
                         Navigator.pop(context); // remove loading dialog
                         if (result['success']) {
-                          final token = result['token'];
+                          final token = result['data'];
 
                           final prefs = await SharedPreferences.getInstance();
                           await prefs.setString('auth_token', token);
