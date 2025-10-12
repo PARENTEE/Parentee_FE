@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:parentee_fe/features/auth/models/api_response.dart';
 
 class ApiService {
   static const String baseUrl = 'http://10.0.2.2:5000/api/v1';
@@ -10,18 +11,18 @@ class ApiService {
   // 🔹 API Endpoints
   // --------------------------
 
-  static Future<Map<String, dynamic>> login(
+  static Future<ApiResponse> login(
       String email, String password) async {
-    return _sendRequest(
+    return await _sendRequest(
       'auth/login',
       method: 'POST',
       body: {'email': email, 'password': password},
     );
   }
 
-  static Future<Map<String, dynamic>> register(
+  static Future<ApiResponse> register(
       String email, String fullName, String phone, String password) async {
-    return _sendRequest(
+    return await _sendRequest(
       'user',
       method: 'POST',
       body: {
@@ -33,17 +34,17 @@ class ApiService {
     );
   }
 
-  static Future<Map<String, dynamic>> signInWithGoogle(
+  static Future<ApiResponse> signInWithGoogle(
       String email, String fullName) async {
-    return _sendRequest(
+    return await _sendRequest(
       'auth/signin-google',
       method: 'POST',
       body: {'email': email, 'fullName': fullName},
     );
   }
 
-  static Future<Map<String, dynamic>> getUserProfile(String token) async {
-    return _sendRequest(
+  static Future<ApiResponse> getUserProfile(String token) async {
+    return await _sendRequest(
       'user/current',
       token: token,
       method: 'GET',
@@ -51,7 +52,7 @@ class ApiService {
   }
 
   /// 🔹 Generic request handler
-  static Future<Map<String, dynamic>> _sendRequest(
+  static Future<ApiResponse> _sendRequest(
       String endpoint, {
         String method = 'GET',
         String? token,
@@ -59,13 +60,13 @@ class ApiService {
       })
   async {
     final url = Uri.parse('$baseUrl/$endpoint');
+    print('Call API with endpoint: $baseUrl/$endpoint');
+
     final headers = {
       'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
     };
-
-    if (token != null && token.isNotEmpty) {
-      headers['Authorization'] = 'Bearer $token';
-    }
 
     try {
       http.Response response;
@@ -104,40 +105,26 @@ class ApiService {
 
         default:
           response = await http
-              .get(url, headers: {'Content-Type': 'application/json'})
+              .get(url, headers: headers)
               .timeout(const Duration(seconds: 10));
       }
 
       // 🔹 Parse response
       final jsonBody = _tryDecodeJson(response.body);
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        return {'success': true, 'data': jsonBody['data']};
+        return ApiResponse(success: true, data: jsonBody['data']);
       } else {
-        final message = jsonBody['reason'] ??
-            jsonBody['message'] ??
-            'Request failed (${response.statusCode})';
-        return {'success': false, 'message': message};
+        final message = jsonBody['reason'] ?? jsonBody['message'] ?? 'Request failed (${response.statusCode})';
+        return ApiResponse(success: false, message: message);
       }
     } on TimeoutException {
-      return {
-        'success': false,
-        'message': 'Request timed out. Please try again later.',
-      };
+      return ApiResponse(success: false, message: 'Request timed out. Please try again later.');
     } on SocketException {
-      return {
-        'success': false,
-        'message': 'No internet connection. Please check your network.',
-      };
+      return ApiResponse(success: false, message: 'No internet connection. Please check your network.');
     } on HttpException {
-      return {
-        'success': false,
-        'message': 'Server error. Please try again later.',
-      };
+      return ApiResponse(success: false, message: 'Server error. Please try again later.');
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Unexpected error: $e',
-      };
+      return ApiResponse(success: false, message:'Unexpected error: $e');
     }
   }
 

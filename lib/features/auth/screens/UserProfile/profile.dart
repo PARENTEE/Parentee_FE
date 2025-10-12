@@ -1,11 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:parentee_fe/features/auth/models/user.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/onboarding-page.dart';
+import 'package:parentee_fe/services/shared_preferences_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../app/theme/app_colors.dart';
 import 'profile_detail.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  User? user;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUser();
+  }
+
+  Future<void> loadUser() async {
+    final loadedUser = await SharedPreferencesService.getUserFromPrefs();
+    setState(() {
+      user = loadedUser;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +41,9 @@ class ProfilePage extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
+      body: user == null
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
@@ -39,25 +63,25 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Nguyễn Văn A",
-                          style: TextStyle(
+                          // Full Name
+                          user!.fullName ?? "Không có tên",
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          "nguyenvana@gmail.com",
-                          style: TextStyle(color: Colors.grey),
+                          user!.email ?? "Không có email",
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       ],
                     ),
                   ),
-                  // Edit icon
                   IconButton(
                     icon: const Icon(
                       Icons.edit,
@@ -79,10 +103,7 @@ class ProfilePage extends StatelessWidget {
 
             // General section
             _buildSectionTitle("Chung"),
-            // _buildMenuItem(Icons.location_on_outlined, "Location"),
-            // _buildMenuItem(Icons.local_shipping_outlined, "Pickup location"),
             _buildMenuItem(Icons.inventory_2_outlined, "Lịch sử giao dịch"),
-            // _buildMenuItem(Icons.qr_code_scanner, "Scan QR code"),
             _buildMenuItem(Icons.lock_outline, "Đổi mật khẩu"),
 
             const SizedBox(height: 24),
@@ -90,9 +111,7 @@ class ProfilePage extends StatelessWidget {
             // Support section
             _buildSectionTitle("Hỗ trợ"),
             _buildMenuItem(
-              Icons.chat_bubble_outline,
-              "Cần trợ giúp? Chat ngay",
-            ),
+                Icons.chat_bubble_outline, "Cần trợ giúp? Chat ngay"),
             _buildMenuItem(Icons.privacy_tip_outlined, "Chính sách bảo mật"),
 
             const SizedBox(height: 24),
@@ -112,6 +131,7 @@ class ProfilePage extends StatelessWidget {
                 onPressed: () async {
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.remove('auth_token');
+                  await prefs.remove('user');
 
                   Navigator.pushReplacement(
                     context,

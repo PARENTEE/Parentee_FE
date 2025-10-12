@@ -131,7 +131,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     // remove loading
                     Navigator.pop(context);
 
-                    if (result['success']) {
+                    if (result.success) {
                       PopUpToastService.showSuccessToast(
                         context,
                         'Đăng ký thành công!',
@@ -140,7 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     } else {
                       PopUpToastService.showErrorToast(
                         context,
-                        result['message'] ?? 'Đăng ký thất bại!',
+                        result.message ?? 'Đăng ký thất bại!',
                       );
                     }
                   },

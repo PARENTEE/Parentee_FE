@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
+import 'package:parentee_fe/features/auth/models/api_response.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/login-successfully.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/register.dart';
 import 'package:parentee_fe/services/api_service.dart';
@@ -260,7 +261,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<void> _runLoginProcess(Future<Map<String, dynamic>> Function() action) async {
+  Future<void> _runLoginProcess(Future<ApiResponse> Function() apiAction) async {
     // show loading dialog
     showDialog(
       context: context,
@@ -269,19 +270,19 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     try {
-      final result = await action(); // await the passed function
+      final result = await apiAction(); // await the passed function
 
 
-      if (result['success']) {
-        final token = result['data'];
+      if (result.success) {
+        final token = result.data;
 
         // Save token
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
 
         // Fetch and save user info
-        // await SharedPreferencesService.fetchAndSaveUser(token);
-        // print(SharedPreferencesService.getUserFromPrefs());
+        await SharedPreferencesService.fetchAndSaveUser(token);
+
         Navigator.pop(context); // remove loading
 
         Navigator.pushReplacement(
@@ -289,7 +290,7 @@ class _LoginPageState extends State<LoginPage> {
           MaterialPageRoute(builder: (_) => const LoginSuccessfullyPage()),
         );
       } else {
-        PopUpToastService.showErrorToast(context, result['message']);
+        PopUpToastService.showErrorToast(context, result.message.toString());
         Navigator.pop(context); // remove loading
       }
     } catch (e) {

@@ -6,6 +6,7 @@ import 'package:parentee_fe/services/popup_toast_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesService {
+
   static Future<void> saveUserToPrefs(User user) async {
     final prefs = await SharedPreferences.getInstance();
     final userJson = jsonEncode(user.toJson());
@@ -31,8 +32,8 @@ class SharedPreferencesService {
     // Call API
     final result = await ApiService.getUserProfile(token);
 
-    if (result['success']) {
-      final user = User.fromJson(jsonDecode(result['data']));
+    if (result.success) {
+      final user = User.fromJson(result.data);
       await saveUserToPrefs(user);
     }
     else{

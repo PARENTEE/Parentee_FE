@@ -1,4 +1,5 @@
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:parentee_fe/features/auth/models/api_response.dart';
 import 'package:parentee_fe/services/api_service.dart';
 
 class AuthService {
@@ -27,7 +28,7 @@ class AuthService {
     }
   }
 
-  static Future<Map<String, dynamic>> signInWithGoogle() async {
+  static Future<ApiResponse> signInWithGoogle() async {
     await _ensureGoogleSignInInitialized();
 
     try {
@@ -38,10 +39,9 @@ class AuthService {
       // Get current account
       if (account != null) {
         // Sign in to BE to get token
-        print('Signed in as ${account.displayName} (${account.email})');
         return await ApiService.signInWithGoogle(account.email, account.displayName.toString());
       }
-      return {'success': false, 'message': "Thoát trong lúc đăng nhập Goole!"};
+      return ApiResponse(success: false, message: 'Thoát trong lúc đăng nhập Goole!');
     } on GoogleSignInException catch (e) {
       print(
         'Google Sign In error: code: ${e.code.name} description:${e.description} details:${e.details}',
