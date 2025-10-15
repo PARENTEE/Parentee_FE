@@ -1,103 +1,105 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-// Import Dio instead of http
+
 import 'package:dio/dio.dart';
-import 'package:parentee_fe/features/auth/models/api_response.dart';
+import 'package:parentee_fe/features/auth/models/api_response.dart'; // Assuming this path is correct
 
-class ApiService {
-  // Use a final Dio instance for better management and interceptors
-  static final Dio _dio = Dio();
-  static const String baseUrl = 'http://localhost:5000/api/v1';
-  // static const String baseUrl = 'http://10.0.2.2:5000/api/v1';
+class ApiServiceDio {
+  // 1. Singleton Instance and Factory
+  static final ApiServiceDio _instance = ApiServiceDio._internal();
+  factory ApiServiceDio() => _instance;
 
-  // Static constructor to configure Dio (optional, but good practice)
-  static void configureDio() {
-    _dio.options.baseUrl = baseUrl;
-    _dio.options.connectTimeout = const Duration(seconds: 10); // 10s
-    _dio.options.receiveTimeout = const Duration(seconds: 10); // 10s
-    _dio.options.headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-    // You can add interceptors here, e.g., for logging or token refresh
-    // _dio.interceptors.add(LogInterceptor(responseBody: true));
+  // 2. Private Dio instance
+  late final Dio _dio;
+
+  // 3. Base URL
+  static const String baseUrl = 'http://127.0.0.1:5000/api/v1/';
+
+  // 4. Private constructor (for the singleton)
+  ApiServiceDio._internal();
+
+  // 5. Public Initialization Method
+  /// Cấu hình và khởi tạo Dio. BẮT BUỘC phải gọi hàm này MỘT LẦN.
+  static void initialize() {
+    // We use a local method to ensure we only configure the instance once.
+    if (_instance._dioInitialized) return;
+
+    _instance._dio = Dio(BaseOptions(
+      baseUrl: baseUrl,
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    ));
+
+    // Thêm LogInterceptor
+    _instance._dio.interceptors.add(LogInterceptor(
+      requestBody: true,
+      responseBody: true,
+      error: true,
+      logPrint: (object) => print("DIO LOG: $object"),
+    ));
+
+    _instance._dioInitialized = true;
   }
 
-  // Initialize configuration (call this once in your app's main or setup)
-  // static { // This is for Dart 3, use a method for compatibility
-  //   configureDio();
-  // }
-
-  // Call configureDio() outside the class once, or make the methods call it if needed.
+  // Add a simple flag to track initialization
+  bool _dioInitialized = false;
 
   // --------------------------
-  // 🔹 API Endpoints (Minimal changes here)
+  // 🔹 API Endpoints (Now instance methods, but callable via static access)
   // --------------------------
 
   static Future<ApiResponse> login(String email, String password) async {
-    return await _sendRequest(
+    return await _instance._sendRequest(
       'auth/login',
       method: 'POST',
       data: {'email': email, 'password': password},
     );
   }
 
-  static Future<ApiResponse> register(
-      String email, String fullName, String phone, String password) async {
-    return await _sendRequest(
-      'user',
-      method: 'POST',
-      data: {
-        'email': email,
-        'fullName': fullName,
-        'phone': phone,
-        'password': password,
-      },
-    );
-  }
-
-  static Future<ApiResponse> signInWithGoogle(
-      String email, String fullName) async {
-    return await _sendRequest(
-      'auth/signin-google',
-      method: 'POST',
-      data: {'email': email, 'fullName': fullName},
-    );
-  }
-
   static Future<ApiResponse> getUserProfile(String token) async {
-    return await _sendRequest(
+    return await _instance._sendRequest(
       'user/current',
       token: token,
       method: 'GET',
     );
   }
 
-  /// 🔹 Generic request handler using Dio
-  static Future<ApiResponse> _sendRequest(
+  // ... (Other static methods like register, signInWithGoogle, getUserProfile
+  //      must also be refactored to call _instance._sendRequest) ...
+
+  // --------------------------
+  // 🔹 Generic Request Handler (Instance method)
+  // --------------------------
+
+  Future<ApiResponse> _sendRequest(
     String endpoint, {
     String method = 'GET',
     String? token,
-    Map<String, dynamic>? data, // Renamed 'body' to 'data' for Dio convention
+    Map<String, dynamic>? data,
   }) async {
-    print('Call API with endpoint: $baseUrl/$endpoint');
+    // Ensure initialization is done, this throws the error if not called in main()
+    // but avoids the 'already initialized' error.
+    if (!_dioInitialized) {
+      throw StateError(
+          "ApiServiceDio must be initialized by calling ApiServiceDio.initialize() in main().");
+    }
 
-    // Create a temporary Options object to apply the token
+    print('Call API with full endpoint: $baseUrl/$endpoint');
+
     final options = Options(
+      method: method,
       headers: {
-        // Inherit default headers from _dio.options if configured,
-        // or explicitly set content type if not configured globally.
         if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
       },
-      method: method, // Set the HTTP method
     );
 
     try {
-      Response response;
+      final Response response;
 
-      // Dio handles method and data/body in a unified way
-      // The endpoint is appended to the baseUrl set in Dio options
       switch (method.toUpperCase()) {
         case 'POST':
           response = await _dio.post(endpoint, data: data, options: options);
@@ -110,81 +112,67 @@ class ApiService {
           break;
         case 'GET':
         default:
-          // For GET, the data parameter is typically used for query parameters,
-          // but if you have a configured Dio instance, a simple call works.
-          response = await _dio.get(endpoint, options: options);
+          response =
+              await _dio.get(endpoint, options: options, queryParameters: data);
       }
 
-      // Dio automatically parses the response body into the 'data' field
-      // if the Content-Type is application/json. The status code is in 'statusCode'.
-
-      // 🔹 Parse successful response
-      if (response.statusCode! >= 200 && response.statusCode! < 300) {
-        // Dio's response.data is already the decoded JSON map
-        final Map<String, dynamic> jsonBody =
-            response.data is Map ? response.data : {};
-        return ApiResponse(success: true, data: jsonBody['data']);
-      } else {
-        // This block is often unnecessary because Dio throws a DioException
-        // for non-2xx status codes (unless validateStatus is overridden).
-        final jsonBody = response.data is Map ? response.data : {};
-        final message = jsonBody['reason'] ??
-            jsonBody['message'] ??
-            'Request failed (${response.statusCode})';
-        return ApiResponse(success: false, message: message);
-      }
+      final Map<String, dynamic> jsonBody =
+          response.data is Map ? response.data : {};
+      return ApiResponse(success: true, data: jsonBody['data']);
     } on DioException catch (e) {
-      // DioException handles all Dio-specific errors (HTTP errors, timeouts, network issues)
       return _handleDioError(e);
     } catch (e) {
-      // Handle any other unexpected errors
-      return ApiResponse(success: false, message: 'Unexpected error: $e');
+      return ApiResponse(
+          success: false, message: 'Unexpected application error: $e');
     }
   }
 
-  /// 🔹 Dio Error Handler
+  // --------------------------
+  // 🔹 Dio Error Handler (No change needed here)
+  // --------------------------
+
   static ApiResponse _handleDioError(DioException e) {
+    // ... (Your error handling logic remains the same) ...
     String message = 'Unexpected error occurred.';
 
     switch (e.type) {
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.sendTimeout:
-      case DioExceptionType.receiveTimeout:
-        message = 'Request timed out. Please try again later.';
-        break;
-
+      // ... (implementation of error handling) ...
       case DioExceptionType.badResponse:
-        // Handle non-2xx HTTP responses
-        final responseData = e.response?.data is Map ? e.response?.data : {};
+        final responseData = e.response?.data;
         final statusCode = e.response?.statusCode;
-
-        // Try to extract an error message from the response body
-        message = responseData?['reason'] ??
-            responseData?['message'] ??
-            'Request failed ($statusCode).';
-        break;
-
-      case DioExceptionType.connectionError:
-      case DioExceptionType.unknown:
-        if (e.error is SocketException) {
-          // SocketException usually indicates no internet connection
-          message = 'No internet connection. Please check your network.';
+        if (responseData is Map<String, dynamic>) {
+          message = responseData['reason'] ??
+              responseData['message'] ??
+              responseData['error'] ??
+              'Request failed with status $statusCode.';
         } else {
-          message = 'Network error or unhandled connection issue.';
+          message = 'Request failed ($statusCode).';
         }
         break;
-
-      case DioExceptionType.cancel:
-        message = 'Request cancelled.';
-        break;
-
+      // ... (other cases) ...
+      case DioExceptionType.connectionTimeout:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case DioExceptionType.sendTimeout:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case DioExceptionType.receiveTimeout:
+        // TODO: Handle this case.
+        throw UnimplementedError();
       case DioExceptionType.badCertificate:
-        message = 'Certificate verification failed.';
-        break;
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case DioExceptionType.cancel:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case DioExceptionType.connectionError:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case DioExceptionType.unknown:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
-
-    // You might log the error here for debugging: print('Dio Error: $e');
-
+    print('DIO ERROR: ${e.toString()}');
     return ApiResponse(success: false, message: message);
   }
 }

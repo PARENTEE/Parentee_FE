@@ -5,8 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:parentee_fe/features/auth/models/api_response.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:5000/api/v1';
-  // static const String baseUrl = 'http://10.0.2.2:5000/api/v1';
+  static const String baseUrl = 'http://10.0.2.2:5000/api/v1';
 
   // --------------------------
   // 🔹 API Endpoints

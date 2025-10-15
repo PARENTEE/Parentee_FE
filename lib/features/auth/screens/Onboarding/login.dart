@@ -6,6 +6,7 @@ import 'package:parentee_fe/features/auth/models/api_response.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/login-successfully.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/register.dart';
 import 'package:parentee_fe/services/api_service.dart';
+import 'package:parentee_fe/services/api_service_dio.dart';
 import 'package:parentee_fe/services/auth_service.dart';
 import 'package:parentee_fe/services/popup_toast_service.dart';
 import 'package:parentee_fe/services/shared_preferences_service.dart';
@@ -210,7 +211,8 @@ class _LoginPageState extends State<LoginPage> {
                         final password = _passwordController.text.trim();
 
                         // Run Login process
-                        await _runLoginProcess(() => ApiService.login(email, password));
+                        await _runLoginProcess(
+                            () => ApiServiceDio.login(email, password));
                       }
                     },
                     child: Text(
@@ -261,7 +263,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<void> _runLoginProcess(Future<ApiResponse> Function() apiAction) async {
+  Future<void> _runLoginProcess(
+      Future<ApiResponse> Function() apiAction) async {
     // show loading dialog
     showDialog(
       context: context,
@@ -271,7 +274,6 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final result = await apiAction(); // await the passed function
-
 
       if (result.success) {
         final token = result.data;
