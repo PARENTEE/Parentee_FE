@@ -92,6 +92,7 @@ flutter:
     - assets/images/nutrient.png
     - assets/images/order-tracking.png
     - assets/images/weather.png
+    - assets/images/sleep.png
     - assets/images/weather/clear.jpg
     - assets/images/weather/cloud.jpg
     - assets/images/weather/rain.jpg

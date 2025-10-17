@@ -13,7 +13,7 @@ class ApiServiceDio {
   late final Dio _dio;
 
   // 3. Base URL
-  static const String baseUrl = 'http://127.0.0.1:5000/api/v1/';
+  static const String baseUrl = 'http://10.0.2.2:5000/api/v1/';
 
   // 4. Private constructor (for the singleton)
   ApiServiceDio._internal();
@@ -24,23 +24,27 @@ class ApiServiceDio {
     // We use a local method to ensure we only configure the instance once.
     if (_instance._dioInitialized) return;
 
-    _instance._dio = Dio(BaseOptions(
-      baseUrl: baseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    ));
+    _instance._dio = Dio(
+      BaseOptions(
+        baseUrl: baseUrl,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+    );
 
     // Thêm LogInterceptor
-    _instance._dio.interceptors.add(LogInterceptor(
-      requestBody: true,
-      responseBody: true,
-      error: true,
-      logPrint: (object) => print("DIO LOG: $object"),
-    ));
+    _instance._dio.interceptors.add(
+      LogInterceptor(
+        requestBody: true,
+        responseBody: true,
+        error: true,
+        logPrint: (object) => print("DIO LOG: $object"),
+      ),
+    );
 
     _instance._dioInitialized = true;
   }
@@ -85,7 +89,8 @@ class ApiServiceDio {
     // but avoids the 'already initialized' error.
     if (!_dioInitialized) {
       throw StateError(
-          "ApiServiceDio must be initialized by calling ApiServiceDio.initialize() in main().");
+        "ApiServiceDio must be initialized by calling ApiServiceDio.initialize() in main().",
+      );
     }
 
     print('Call API with full endpoint: $baseUrl/$endpoint');
@@ -112,8 +117,11 @@ class ApiServiceDio {
           break;
         case 'GET':
         default:
-          response =
-              await _dio.get(endpoint, options: options, queryParameters: data);
+          response = await _dio.get(
+            endpoint,
+            options: options,
+            queryParameters: data,
+          );
       }
 
       final Map<String, dynamic> jsonBody =
@@ -123,7 +131,9 @@ class ApiServiceDio {
       return _handleDioError(e);
     } catch (e) {
       return ApiResponse(
-          success: false, message: 'Unexpected application error: $e');
+        success: false,
+        message: 'Unexpected application error: $e',
+      );
     }
   }
 
@@ -141,7 +151,8 @@ class ApiServiceDio {
         final responseData = e.response?.data;
         final statusCode = e.response?.statusCode;
         if (responseData is Map<String, dynamic>) {
-          message = responseData['reason'] ??
+          message =
+              responseData['reason'] ??
               responseData['message'] ??
               responseData['error'] ??
               'Request failed with status $statusCode.';

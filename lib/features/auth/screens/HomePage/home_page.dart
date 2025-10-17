@@ -11,34 +11,45 @@ import 'package:parentee_fe/features/auth/screens/UserProfile/profile.dart';
 import 'package:parentee_fe/features/auth/widgets/bottom_nav.dart';
 import 'package:parentee_fe/features/auth/screens/HomePage/Weather/weather.dart';
 
+import '../SleepTracker/add_sleep_page.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  // Danh mục
+  // 🟩 Danh mục
   static final List<Map<String, dynamic>> categories = [
     {
       "icon": "assets/images/order-tracking.png",
       "label": "Bộ theo dõi",
       "page": const BabyProfilePage(),
+      "color": const Color(0xFFFFE5E0),
     },
     {
       "icon": "assets/images/weather.png",
       "label": "Thời tiết",
       "page": const WeatherPage(),
+      "color": const Color(0xFFD0EAF2),
     },
     {
       "icon": "assets/images/drugs.png",
       "label": "Thuốc",
       "page": const MedicinePage(),
+      "color": const Color(0xFFFBE7C6),
     },
     {
       "icon": "assets/images/nutrient.png",
       "label": "Dinh dưỡng",
       "page": const NutrientPage(),
+      "color": const Color(0xFFE0F7E9),
+    },
+    {
+      "icon": "assets/images/sleep.png",
+      "label": "Giấc ngủ",
+      "page": const AddSleepPage(),
+      "color": Color(0xFFE8F6FF),
     },
   ];
 
-  // Banner (carousel)
   static final List<String> banners = [
     "assets/images/carousel/carousel_1.jpg",
     "assets/images/carousel/carousel_2.jpg",
@@ -189,7 +200,6 @@ Bữa tối:
     ),
   ];
 
-  // Khóa học
   static final List<Map<String, String>> courses = [
     {
       "image": "assets/images/homepage/co_parenting.jpg",
@@ -226,7 +236,7 @@ Bữa tối:
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
+                // 🟦 Header
                 Row(
                   children: [
                     GestureDetector(
@@ -267,7 +277,6 @@ Bữa tối:
                       ),
                     ),
                     const Spacer(),
-                    // Icon notification + badge đỏ
                     Stack(
                       clipBehavior: Clip.none,
                       children: [
@@ -303,7 +312,7 @@ Bữa tối:
 
                 const SizedBox(height: 16),
 
-                // Banner Carousel
+                // 🟦 Banner
                 CarouselSlider(
                   options: CarouselOptions(
                     height: 170,
@@ -314,36 +323,15 @@ Bữa tối:
                     autoPlayInterval: const Duration(seconds: 3),
                   ),
                   items:
-                      banners.map((banner) {
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            banner,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        );
-                      }).toList(),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Danh mục
-                const Text(
-                  "Danh mục",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children:
-                      categories
+                      banners
                           .map(
-                            (cat) => _buildCategory(
-                              context,
-                              cat["icon"],
-                              cat["label"],
-                              cat["page"],
+                            (banner) => ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.asset(
+                                banner,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                              ),
                             ),
                           )
                           .toList(),
@@ -351,7 +339,33 @@ Bữa tối:
 
                 const SizedBox(height: 24),
 
-                // Chuyên mục
+                // 🟩 Danh mục (cột có màu nền riêng)
+                const Text(
+                  "Danh mục",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                Column(
+                  children:
+                      categories
+                          .map(
+                            (cat) => Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: _buildCategory(
+                                context,
+                                cat["icon"] ?? "",
+                                cat["label"] ?? "",
+                                cat["page"],
+                                cat["color"] ?? Colors.grey.shade200,
+                              ),
+                            ),
+                          )
+                          .toList(),
+                ),
+
+                const SizedBox(height: 24),
+
+                // 🟦 Chuyên mục
                 const Text(
                   "Chuyên mục",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -388,7 +402,7 @@ Bữa tối:
 
                 const SizedBox(height: 24),
 
-                // Khóa học
+                // 🟦 Khóa học
                 const Text(
                   "Khóa học",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -417,41 +431,57 @@ Bữa tối:
     );
   }
 
-  /// Widget danh mục
+  /// 🟦 Danh mục
   static Widget _buildCategory(
     BuildContext context,
     String image,
-    String label, [
-    Widget? page,
-  ]) {
+    String label,
+    Widget page,
+    Color bgColor,
+  ) {
     return InkWell(
-      onTap: () {
-        if (page != null) {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => page));
-        } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text("$label chưa có trang")));
-        }
-      },
-      child: Column(
-        children: [
-          SizedBox(
-            height: 56,
-            width: 56,
-            child: Image.asset(image, fit: BoxFit.contain),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-          ),
-        ],
+      onTap:
+          () =>
+              Navigator.push(context, MaterialPageRoute(builder: (_) => page)),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            if (image.isNotEmpty)
+              Image.asset(image, height: 40, width: 40)
+            else
+              const Icon(Icons.image, size: 40, color: Colors.grey),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+          ],
+        ),
       ),
     );
   }
 
-  /// Widget thẻ dùng chung cho Article & Course
+  /// 🟦 Card dùng chung cho bài viết và khóa học
   static Widget _buildCard({
     required String image,
     required String title,

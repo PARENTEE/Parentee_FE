@@ -15,12 +15,11 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   bool _obscurePassword = true;
 
-  // Controllers for input fields
+  // Controllers
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +33,36 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: isSmall ? 20 : 40),
+              SizedBox(height: isSmall ? 10 : 10),
 
-              // Email
+              /// 🟩 Header Title
+              Text(
+                "Đăng ký tài khoản",
+                style: TextStyle(
+                  fontSize: isSmall ? 20 : 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: isSmall ? 8 : 12),
+
+              /// 🟩 Subtitle
+              Text(
+                "Tạo tài khoản để sử dụng dịch vụ.",
+                style: TextStyle(
+                  fontSize: isSmall ? 14 : 16,
+                  color: Colors.black54,
+                ),
+              ),
+              SizedBox(height: isSmall ? 12 : 16),
+
+              /// 🟩 Lottie animation
+              Lottie.asset(
+                "assets/lottie/register.json",
+                height: isSmall ? 180 : 240,
+              ),
+              SizedBox(height: isSmall ? 20 : 30),
+
+              /// 🟩 Email
               _buildTextField(
                 "Email",
                 "example@email.com",
@@ -46,7 +72,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               SizedBox(height: isSmall ? 12 : 16),
 
-              // Full name
+              /// 🟩 Full name
               _buildTextField(
                 "Họ và Tên",
                 "Nguyễn Văn A",
@@ -55,7 +81,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               SizedBox(height: isSmall ? 12 : 16),
 
-              // Phone
+              /// 🟩 Phone
               _buildTextField(
                 "Số điện thoại",
                 "0123456789",
@@ -65,7 +91,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               SizedBox(height: isSmall ? 12 : 16),
 
-              // Password
+              /// 🟩 Password
               TextField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
@@ -95,7 +121,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               SizedBox(height: isSmall ? 20 : 24),
 
-              // Button Đăng ký
+              /// 🟩 Button Đăng ký
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -136,7 +162,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         context,
                         'Đăng ký thành công!',
                       );
-                      Navigator.pop(context); // Quay lại màn hình đăng nhập
+                      Navigator.pop(context);
                     } else {
                       PopUpToastService.showErrorToast(
                         context,
@@ -155,7 +181,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               SizedBox(height: isSmall ? 12 : 16),
 
-              // Đã có tài khoản
+              /// 🟩 Link quay lại đăng nhập
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
