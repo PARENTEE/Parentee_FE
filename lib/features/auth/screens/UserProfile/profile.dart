@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:parentee_fe/features/auth/models/user.dart';
+import 'package:parentee_fe/features/auth/screens/Onboarding/login-successfully.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/onboarding-page.dart';
+import 'package:parentee_fe/features/auth/screens/UserProfile/Family/family_page.dart';
 import 'package:parentee_fe/services/shared_preferences_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../app/theme/app_colors.dart';
@@ -103,8 +105,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
             // General section
             _buildSectionTitle("Chung"),
+            _buildMenuItem(Icons.inventory_2_outlined, "Gia đình", const FamilyPage()),
             _buildMenuItem(Icons.inventory_2_outlined, "Lịch sử giao dịch"),
-            _buildMenuItem(Icons.lock_outline, "Đổi mật khẩu"),
+            _buildMenuItem(Icons.family_restroom, "Đổi mật khẩu"),
 
             const SizedBox(height: 24),
 
@@ -164,14 +167,21 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title) {
+  Widget _buildMenuItem(IconData icon, String title, [StatefulWidget? navigateWidget]) {
     return Column(
       children: [
         ListTile(
           leading: Icon(icon, color: Colors.black54),
           title: Text(title, style: const TextStyle(fontSize: 15)),
           trailing: const Icon(Icons.chevron_right),
-          onTap: () {},
+          onTap: () {
+            if (navigateWidget != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => navigateWidget),
+              );
+            }
+          },
         ),
         const Divider(height: 1),
       ],
