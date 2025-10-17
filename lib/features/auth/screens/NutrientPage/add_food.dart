@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
+import 'package:parentee_fe/features/auth/screens/TaskTracker/task_dashboard.dart';
 
 import 'nutrient_dashboard.dart';
 
@@ -129,7 +130,8 @@ class AddFoodPage extends StatelessWidget {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const NutrientDashboardPage(),
+                        // builder: (_) => const NutrientDashboardPage(),
+                        builder: (_) => const BabyCareDashboardPage(),
                       ),
                     );
                   },
