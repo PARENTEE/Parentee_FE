@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:parentee_fe/features/auth/models/baby_task.dart';
-import 'package:parentee_fe/services/api_client.dart';
+import 'package:parentee_fe/features/auth/models/update_task_request.dart';
 import 'package:intl/intl.dart';
+import 'package:parentee_fe/services/api_client.dart';
 
 class TaskService {
   final ApiClient _apiClient;
@@ -40,15 +41,25 @@ class TaskService {
   }
 
   // Example of an update function
-  Future<void> updateTaskStatus(String taskId, String newStatus) async {
+  // Your API client file
+
+  Future<void> updateTask(String taskId, UpdateTaskRequest request) async {
     try {
-      // In a real app, you would send the new status in the request body
-      await _apiClient.dio.patch(
-        '/tasks/$taskId/status',
-        data: {'status': newStatus},
+      // The toJson() method ensures we only send the fields that need changing.
+      final response = await _apiClient.dio.put(
+        '/task/$taskId',
+        data: request.toJson(),
       );
-      print('Task $taskId updated to $newStatus');
+
+      if (response.statusCode == 200) {
+        print('Task $taskId updated successfully.');
+      } else {
+        throw Exception(
+            'Failed to update task with status: ${response.statusCode}');
+      }
     } catch (e) {
+      // Handle Dio errors or other exceptions
+      print('Error updating task: $e');
       throw Exception('Failed to update task');
     }
   }

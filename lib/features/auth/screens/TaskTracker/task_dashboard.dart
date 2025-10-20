@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parentee_fe/features/auth/models/baby_task.dart';
+import 'package:parentee_fe/features/auth/models/task_status.dart';
+import 'package:parentee_fe/features/auth/models/update_task_request.dart';
 import 'package:parentee_fe/services/TaskService/task_service.dart';
 import 'package:parentee_fe/services/api_service_dio.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -46,16 +48,28 @@ class _BabyCareDashboardPageState extends State<BabyCareDashboardPage> {
   }
 
   Future<void> _toggleTaskStatus(GetTaskResponseDto task) async {
-    final newStatus = task.status == "Completed" ? "Pending" : "Completed";
+    // This logic is okay, but we can refine it further (see below)
+    final newStatus = task.status == TaskStatus.completed
+        ? TaskStatus.pending
+        : TaskStatus.completed;
+
     try {
-      await _taskService.updateTaskStatus(task.id, newStatus);
+      // ✅ Correct: Create an UpdateTaskRequest object and pass it
+      await _taskService.updateTask(
+        task.id,
+        UpdateTaskRequest(status: newStatus),
+      );
+
       // If the update is successful, refetch the tasks to update the UI
       _fetchTasks(_selectedDay!);
     } catch (e) {
       // Show an error message if the update fails
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update task: ${e.toString()}')),
-      );
+      if (mounted) {
+        // Good practice to check if the widget is still in the tree
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update task: ${e.toString()}')),
+        );
+      }
     }
   }
 
@@ -191,11 +205,12 @@ class _BabyCareDashboardPageState extends State<BabyCareDashboardPage> {
   }
 
   Widget _buildTaskListItem(GetTaskResponseDto task) {
-    final assignedTo = task.createdBy == momId
-        ? "Mẹ"
-        : (task.createdBy == dadId ? "Bố" : "??");
+    // final assignedTo = task.createdBy == momId
+    //     ? "Mẹ"
+    //     : (task.createdBy == dadId ? "Bố" : "??");
     final isDone = task.status == "Completed";
-    final color = assignedTo == "Mẹ" ? Colors.pink : Colors.blue;
+    // final color = assignedTo == "Mẹ" ? Colors.pink : Colors.blue;
+    final color = Colors.blue;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -208,8 +223,7 @@ class _BabyCareDashboardPageState extends State<BabyCareDashboardPage> {
         child: ListTile(
           leading: CircleAvatar(
             backgroundColor: color,
-            child: Text(assignedTo.substring(0, 1),
-                style: const TextStyle(color: Colors.white)),
+            child: Text("Ba Mẹ", style: const TextStyle(color: Colors.white)),
           ),
           title: Text(task.title,
               style: TextStyle(color: color, fontWeight: FontWeight.w600)),

@@ -1,7 +1,8 @@
 // lib/dto/get_task_response.dto.dart
-import 'package:flutter/material.dart'; // Or wherever your TaskStatus is
 
-class BabyTask {
+import '../models/task_status.dart'; // Make sure this path is correct
+
+class GetTaskResponseDto {
   final String id;
   final String familyId;
   final String? childId;
@@ -9,12 +10,12 @@ class BabyTask {
   final String? description;
   final DateTime? startsAt;
   final DateTime? endsAt;
-  final String status;
+  final TaskStatus status; // ✨ Using the enum
   final bool allDay;
   final String? createdBy;
   final DateTime? deletedAt;
 
-  BabyTask({
+  GetTaskResponseDto({
     required this.id,
     required this.familyId,
     this.childId,
@@ -22,16 +23,15 @@ class BabyTask {
     this.description,
     this.startsAt,
     this.endsAt,
-    required this.status,
+    required this.status, // ✨ Using the enum
     required this.allDay,
     this.createdBy,
     this.deletedAt,
   });
 
   /// A factory constructor for creating a new GetTaskResponseDto instance from a map.
-  /// This is the standard way to parse JSON in Dart.
-  factory BabyTask.fromJson(Map<String, dynamic> json) {
-    return BabyTask(
+  factory GetTaskResponseDto.fromJson(Map<String, dynamic> json) {
+    return GetTaskResponseDto(
       id: json['id'] as String,
       familyId: json['familyId'] as String,
       childId: json['childId'] as String?,
@@ -47,7 +47,8 @@ class BabyTask {
           ? DateTime.parse(json['endsAt'] as String)
           : null,
 
-      status: json['status'] as String,
+      // ✅ Use the parser to convert the string from JSON to the TaskStatus enum
+      status: (json['status'] as String).toTaskStatus(),
 
       allDay: json['allDay'] as bool,
       createdBy: json['createdBy'] as String?,
