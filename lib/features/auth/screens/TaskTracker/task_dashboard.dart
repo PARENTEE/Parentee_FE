@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:parentee_fe/features/auth/models/baby_task.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class BabyCareDashboardPage extends StatefulWidget {
@@ -252,22 +253,4 @@ class _BabyCareDashboardPageState extends State<BabyCareDashboardPage> {
       ),
     );
   }
-}
-
-class BabyTask {
-  final String title;
-  final String time;
-  final String assignedTo;
-  final Color color;
-  final DateTime date;
-  bool done;
-
-  BabyTask({
-    required this.title,
-    required this.time,
-    required this.assignedTo,
-    required this.color,
-    required this.date,
-    this.done = false,
-  });
 }
