@@ -6,6 +6,7 @@ import 'package:parentee_fe/features/auth/screens/Onboarding/onboarding-page.dar
 import 'package:parentee_fe/features/auth/screens/UserProfile/Family/family_page.dart';
 import 'package:parentee_fe/features/auth/screens/UserProfile/Family/family_preview_page.dart';
 import 'package:parentee_fe/services/family_service.dart';
+import 'package:parentee_fe/services/popup_toast_service.dart';
 import 'package:parentee_fe/services/shared_preferences_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../app/theme/app_colors.dart';
@@ -28,7 +29,14 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> loadUser() async {
-    final loadedUser = await SharedPreferencesService.getUserFromPrefs();
+    final loadedUser = await SharedPreferencesService.getUserFromPrefs().timeout(const Duration(seconds:5));
+    // Return to Onboarding page if no token was found
+    if(loadedUser == null) {
+      await _logout();
+      PopUpToastService.showWarningToast(context, "Phiên đăng nhập đã hết hạn!");
+      return;
+    }
+
     setState(() {
       user = loadedUser;
     });
@@ -189,16 +197,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                         onPressed: () async {
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.remove('auth_token');
-                          await prefs.remove('user');
+                          await _logout();
+                          PopUpToastService.showSuccessToast(context, "Đăng xuất thành công!");
 
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const OnboardingPage(),
-                            ),
-                          );
                         },
                         child: const Text("Đăng Xuất"),
                       ),
@@ -242,5 +243,19 @@ class _ProfilePageState extends State<ProfilePage> {
         const Divider(height: 1),
       ],
     );
+  }
+
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    await prefs.remove('user');
+
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const OnboardingPage()),
+          (route) => false,
+    );
+
   }
 }

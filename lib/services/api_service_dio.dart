@@ -14,7 +14,7 @@ class ApiServiceDio {
   late final Dio _dio;
 
   // 3. Base URL
-  static const String baseUrl = 'http://127.0.0.1:5000/api/v1/';
+  static const String baseUrl = 'http://10.0.2.2:5000/api/v1/';
 
   // 4. Private constructor (for the singleton)
   ApiServiceDio._internal();
@@ -30,6 +30,7 @@ class ApiServiceDio {
         baseUrl: baseUrl,
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
+        sendTimeout: const Duration(seconds: 10),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -108,15 +109,21 @@ class ApiServiceDio {
 
       switch (method.toUpperCase()) {
         case 'POST':
-          response = await _dio.post(endpoint, data: data, options: options);
+          response = await _dio.post(endpoint, data: data, options: options)
+              .timeout(const Duration(seconds: 10));
           break;
         case 'PUT':
-          response = await _dio.put(endpoint, data: data, options: options);
+          response = await _dio.put(endpoint, data: data, options: options)
+              .timeout(const Duration(seconds: 10));
           break;
         case 'DELETE':
-          response = await _dio.delete(endpoint, data: data, options: options);
+          response = await _dio.delete(endpoint, data: data, options: options)
+              .timeout(const Duration(seconds: 10));
           break;
         case 'GET':
+          response = await _dio.get(endpoint, data: data, options: options)
+              .timeout(const Duration(seconds: 10));
+          break;
         default:
           response = await _dio.get(
             endpoint,

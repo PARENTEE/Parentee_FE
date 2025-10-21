@@ -43,6 +43,7 @@ class _BottomNavState extends State<BottomNav> {
     }
     if (index == 4) {
       Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
+      return;
     }
 
     setState(() {
