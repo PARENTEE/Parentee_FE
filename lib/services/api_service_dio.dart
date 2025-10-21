@@ -14,7 +14,7 @@ class ApiServiceDio {
   late final Dio _dio;
 
   // 3. Base URL
-  static const String baseUrl = 'http://10.0.2.2:5000/api/v1/';
+  static const String baseUrl = 'http://127.0.0.1:5000/api/v1/';
 
   // 4. Private constructor (for the singleton)
   ApiServiceDio._internal();
@@ -152,8 +152,7 @@ class ApiServiceDio {
         final responseData = e.response?.data;
         final statusCode = e.response?.statusCode;
         if (responseData is Map<String, dynamic>) {
-          message =
-              responseData['reason'] ??
+          message = responseData['reason'] ??
               responseData['message'] ??
               responseData['error'] ??
               'Request failed with status $statusCode.';

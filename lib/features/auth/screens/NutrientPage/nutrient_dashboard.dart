@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:parentee_fe/features/auth/screens/MedicinePage/medicine_dashboard.dart';
 import 'package:parentee_fe/features/auth/screens/NutrientPage/add_food.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -202,22 +203,4 @@ class _MedicineDashboardPageState extends State<NutrientDashboardPage> {
       ),
     );
   }
-}
-
-class Task {
-  final String time;
-  final String title;
-  final String description;
-  final String start;
-  final String end;
-  final Color color;
-
-  Task({
-    required this.time,
-    required this.title,
-    required this.description,
-    required this.start,
-    required this.end,
-    required this.color,
-  });
 }
