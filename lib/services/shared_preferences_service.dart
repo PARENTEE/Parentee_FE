@@ -7,6 +7,12 @@ import 'package:parentee_fe/services/popup_toast_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesService {
+
+  static Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');;
+  }
+
   static Future<void> saveUserToPrefs(User user) async {
     final prefs = await SharedPreferences.getInstance();
     final userJson = jsonEncode(user.toJson());

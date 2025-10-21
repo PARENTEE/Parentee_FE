@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:parentee_fe/features/auth/models/family.dart';
 import 'package:parentee_fe/features/auth/models/user.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/login-successfully.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/onboarding-page.dart';
 import 'package:parentee_fe/features/auth/screens/UserProfile/Family/family_page.dart';
+import 'package:parentee_fe/features/auth/screens/UserProfile/Family/family_preview_page.dart';
+import 'package:parentee_fe/services/family_service.dart';
 import 'package:parentee_fe/services/shared_preferences_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../app/theme/app_colors.dart';
@@ -43,110 +46,166 @@ class _ProfilePageState extends State<ProfilePage> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: user == null
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Avatar box
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 28,
-                    backgroundImage: AssetImage(
-                      "assets/images/homepage/family.jpg",
+      body:
+          user == null
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    // Avatar box
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          const CircleAvatar(
+                            radius: 28,
+                            backgroundImage: AssetImage(
+                              "assets/images/homepage/family.jpg",
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  // Full Name
+                                  user!.fullName ?? "Không có tên",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  user!.email ?? "Không có email",
+                                  style: const TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.edit,
+                              color: AppColors.primary_button,
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ProfileDetailPage(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          // Full Name
-                          user!.fullName ?? "Không có tên",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                    const SizedBox(height: 24),
+
+                    // General section
+                    _buildSectionTitle("Chung"),
+                    _buildMenuItem(
+                      Icons.inventory_2_outlined,
+                      "Gia đình",
+                      () async {
+                        // show loading dialog
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (_) => const Center(child: CircularProgressIndicator()),
+                        );
+                        // Get family info
+                        final result = await FamilyService.getFamilyThroughToken();
+
+                        // Remove loading
+                        Navigator.pop(context);
+
+                        if (result.success) {
+                          final family = Family.fromJson(result.data);
+
+                          // If family exist -> navigate to family page
+                          if (family != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FamilyPage(family: family),
+                              ),
+                            );
+                          }
+                        }
+                        // If family not exist -> navigate to family preview page
+                        else if(!result.success){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const FamilyPreviewPage(),
+                            ),
+                          );
+                        }
+                        else {
+                          throw Exception('Không thể lấy thông tin gia đình!');
+                        }
+
+                      },
+                    ),
+
+                    _buildMenuItem(
+                      Icons.inventory_2_outlined,
+                      "Lịch sử giao dịch",
+                      null,
+                    ),
+                    _buildMenuItem(Icons.family_restroom, "Đổi mật khẩu", null),
+
+                    const SizedBox(height: 24),
+
+                    // Support section
+                    _buildSectionTitle("Hỗ trợ"),
+                    _buildMenuItem(
+                      Icons.chat_bubble_outline,
+                      "Cần trợ giúp? Chat ngay", () => {}
+                    ),
+                    _buildMenuItem(
+                      Icons.privacy_tip_outlined,
+                      "Chính sách bảo mật", () => {}
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Logout
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red.shade50,
+                          foregroundColor: Colors.red,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        Text(
-                          user!.email ?? "Không có email",
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                      ],
+                        onPressed: () async {
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.remove('auth_token');
+                          await prefs.remove('user');
+
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const OnboardingPage(),
+                            ),
+                          );
+                        },
+                        child: const Text("Đăng Xuất"),
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.edit,
-                      color: AppColors.primary_button,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ProfileDetailPage(),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // General section
-            _buildSectionTitle("Chung"),
-            _buildMenuItem(Icons.inventory_2_outlined, "Gia đình", const FamilyPage()),
-            _buildMenuItem(Icons.inventory_2_outlined, "Lịch sử giao dịch"),
-            _buildMenuItem(Icons.family_restroom, "Đổi mật khẩu"),
-
-            const SizedBox(height: 24),
-
-            // Support section
-            _buildSectionTitle("Hỗ trợ"),
-            _buildMenuItem(
-                Icons.chat_bubble_outline, "Cần trợ giúp? Chat ngay"),
-            _buildMenuItem(Icons.privacy_tip_outlined, "Chính sách bảo mật"),
-
-            const SizedBox(height: 24),
-
-            // Logout
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.shade50,
-                  foregroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  ],
                 ),
-                onPressed: () async {
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.remove('auth_token');
-                  await prefs.remove('user');
-
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const OnboardingPage()),
-                  );
-                },
-                child: const Text("Đăng Xuất"),
               ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -167,21 +226,18 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title, [StatefulWidget? navigateWidget]) {
+  Widget _buildMenuItem(
+    IconData icon,
+    String title,
+    Function()? onTapFunction,
+  ) {
     return Column(
       children: [
         ListTile(
           leading: Icon(icon, color: Colors.black54),
           title: Text(title, style: const TextStyle(fontSize: 15)),
           trailing: const Icon(Icons.chevron_right),
-          onTap: () {
-            if (navigateWidget != null) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => navigateWidget),
-              );
-            }
-          },
+          onTap: onTapFunction,
         ),
         const Divider(height: 1),
       ],

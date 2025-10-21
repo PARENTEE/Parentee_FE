@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:parentee_fe/features/auth/models/api_response.dart'; // Assuming this path is correct
+import 'package:parentee_fe/features/auth/models/api_response.dart';
+import 'package:parentee_fe/services/shared_preferences_service.dart'; // Assuming this path is correct
 
 class ApiServiceDio {
   // 1. Singleton Instance and Factory
@@ -57,7 +58,7 @@ class ApiServiceDio {
   // --------------------------
 
   static Future<ApiResponse> login(String email, String password) async {
-    return await _instance._sendRequest(
+    return await _instance.sendRequest(
       'auth/login',
       method: 'POST',
       data: {'email': email, 'password': password},
@@ -65,9 +66,8 @@ class ApiServiceDio {
   }
 
   static Future<ApiResponse> getUserProfile(String token) async {
-    return await _instance._sendRequest(
+    return await _instance.sendRequest(
       'user/current',
-      token: token,
       method: 'GET',
     );
   }
@@ -79,10 +79,9 @@ class ApiServiceDio {
   // 🔹 Generic Request Handler (Instance method)
   // --------------------------
 
-  Future<ApiResponse> _sendRequest(
+  Future<ApiResponse> sendRequest(
     String endpoint, {
     String method = 'GET',
-    String? token,
     Map<String, dynamic>? data,
   }) async {
     // Ensure initialization is done, this throws the error if not called in main()
@@ -94,6 +93,8 @@ class ApiServiceDio {
     }
 
     print('Call API with full endpoint: $baseUrl/$endpoint');
+
+    String? token = await SharedPreferencesService.getToken();
 
     final options = Options(
       method: method,
