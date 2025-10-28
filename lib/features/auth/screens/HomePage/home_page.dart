@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:parentee_fe/features/auth/models/article.dart';
 import 'package:parentee_fe/features/auth/screens/ArticlePage/article_detail_page.dart';
+import 'package:parentee_fe/features/auth/screens/BabyTracker/baby_preview_page.dart';
 import 'package:parentee_fe/features/auth/screens/BabyTracker/baby_profile.dart';
 import 'package:parentee_fe/features/auth/screens/Chatbot/chat_topics_page.dart';
 import 'package:parentee_fe/features/auth/screens/HomePage/Notification/notification.dart';
@@ -11,7 +12,7 @@ import 'package:parentee_fe/features/auth/screens/UserProfile/profile.dart';
 import 'package:parentee_fe/features/auth/widgets/bottom_nav.dart';
 import 'package:parentee_fe/features/auth/screens/HomePage/Weather/weather.dart';
 
-import '../SleepTracker/add_sleep_page.dart';
+import '../BabyTracker/Sleep/add_sleep_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -21,7 +22,7 @@ class HomePage extends StatelessWidget {
     {
       "icon": "assets/images/order-tracking.png",
       "label": "Bộ theo dõi",
-      "page": const BabyProfilePage(),
+      "page": const BabyPreviewPage(),
       "color": const Color(0xFFFFE5E0),
     },
     {
@@ -42,12 +43,12 @@ class HomePage extends StatelessWidget {
       "page": const NutrientPage(),
       "color": const Color(0xFFE0F7E9),
     },
-    {
-      "icon": "assets/images/sleep.png",
-      "label": "Giấc ngủ",
-      "page": const AddSleepPage(),
-      "color": Color(0xFFE8F6FF),
-    },
+    // {
+    //   "icon": "assets/images/sleep.png",
+    //   "label": "Giấc ngủ",
+    //   "page": const AddSleepPage(),
+    //   "color": Color(0xFFE8F6FF),
+    // },
   ];
 
   static final List<String> banners = [
@@ -241,12 +242,12 @@ Bữa tối:
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const ProfilePage(),
-                          ),
-                        );
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (_) => const BabyProfilePage(children: children),
+                        //   ),
+                        // );
                       },
                       child: const Row(
                         children: [

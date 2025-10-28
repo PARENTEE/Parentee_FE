@@ -1,8 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:parentee_fe/app/theme/app_colors.dart';
+import 'package:parentee_fe/services/popup_toast_service.dart';
+import 'package:parentee_fe/services/utils_service.dart';
+import 'package:parentee_fe/services/child_service.dart';
 
 class AddFeedingPage extends StatefulWidget {
-  const AddFeedingPage({super.key});
+  final String childId;
+  const AddFeedingPage({super.key, required this.childId});
 
   @override
   State<AddFeedingPage> createState() => _AddFeedingPageState();
@@ -10,7 +15,7 @@ class AddFeedingPage extends StatefulWidget {
 
 class _AddFeedingPageState extends State<AddFeedingPage>
     with SingleTickerProviderStateMixin {
-  String selectedType = 'Breast';
+  int selectedType = 0;
   int leftSeconds = 0;
   int rightSeconds = 0;
   bool leftRunning = false;
@@ -19,6 +24,10 @@ class _AddFeedingPageState extends State<AddFeedingPage>
   Timer? rightTimer;
   DateTime? startTime;
 
+  Duration _leftDuration = const Duration(minutes: 0, seconds: 0);
+  Duration _rightDuration = const Duration(minutes: 0, seconds: 0);
+
+  final _noteController = TextEditingController();
   late TabController _tabController;
 
   // --- Init ---
@@ -69,27 +78,56 @@ class _AddFeedingPageState extends State<AddFeedingPage>
   }
 
   // --- Save ---
-  void _saveFeeding() {
-    final data = {
-      'type': selectedType,
-      'leftDuration': leftSeconds,
-      'rightDuration': rightSeconds,
-      'startTime': startTime?.toIso8601String(),
+  void _saveFeeding() async {
+    var data = {
+      'childId': widget.childId,
+      'method': selectedType, // ví dụ: 0, 1 hoặc "Breast", tùy enum backend bạn
+      'startedAt': startTime?.toIso8601String(),
+      'leftDuration': UtilsService.formatDuration(Duration(seconds: leftSeconds)), // "00:05:30"
+      'rightDuration': UtilsService.formatDuration(Duration(seconds: rightSeconds)), // "00:04:15"
+      'notes': _noteController.text,
     };
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Saved: $data'),
-        duration: const Duration(seconds: 2),
-      ),
+    if (_tabController.index == 1) {
+      data = {
+        'childId': widget.childId,
+        'method': selectedType,
+        'startedAt': startTime?.toIso8601String(),
+        'leftDuration': UtilsService.formatDuration(_leftDuration),
+        'rightDuration': UtilsService.formatDuration(_rightDuration),
+        'notes': _noteController.text
+      };
+    }
+
+    print(data); // kiểm tra trước khi gửi
+
+    // show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
     );
 
-    _stopAll();
-    setState(() {
-      leftSeconds = 0;
-      rightSeconds = 0;
-      startTime = null;
-    });
+    // Call API
+    final response = await ChildService.createFeeding(data);
+
+    // Remove loading
+    Navigator.pop(context);
+
+    if(response.success){
+      PopUpToastService.showSuccessToast(context, "Cho con bú thành công");
+      Navigator.pop(context);
+    }
+    else {
+      PopUpToastService.showErrorToast(context, "Thêm vào không thành công");
+    }
+
+    // _stopAll();
+    // setState(() {
+    //   leftSeconds = 0;
+    //   rightSeconds = 0;
+    //   startTime = null;
+    // });
   }
 
   @override
@@ -102,15 +140,9 @@ class _AddFeedingPageState extends State<AddFeedingPage>
 
   @override
   Widget build(BuildContext context) {
-    final activeSeconds =
-        leftRunning
-            ? leftSeconds
-            : rightRunning
-            ? rightSeconds
-            : (leftSeconds > rightSeconds ? leftSeconds : rightSeconds);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Feeding"), centerTitle: true),
+      appBar: AppBar(title: const Text("Cho bú"), centerTitle: true),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -123,12 +155,12 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                   "Cách cho bú:",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
-                DropdownButton<String>(
+                DropdownButton<int>(
                   value: selectedType,
                   items: const [
-                    DropdownMenuItem(value: 'Breast', child: Text('Breast')),
-                    DropdownMenuItem(value: 'Bottle', child: Text('Bottle')),
-                    DropdownMenuItem(value: 'Solids', child: Text('Solids')),
+                    DropdownMenuItem(value: 0, child: Text('Sữa mẹ')),
+                    DropdownMenuItem(value: 1, child: Text('Chai')),
+                    // DropdownMenuItem(value: 'Solids', child: Text('Solids')),
                   ],
                   onChanged: (v) => setState(() => selectedType = v!),
                 ),
@@ -197,7 +229,7 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                   labelColor: Colors.white,
                   unselectedLabelColor: Colors.black87,
                   indicator: BoxDecoration(
-                    color: Colors.green,
+                    color: AppColors.primary_button,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   indicatorSize: TabBarIndicatorSize.tab, // 👈 quan trọng để chiếm full nửa tab
@@ -225,33 +257,31 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                         children: [
                           Column(
                             children: [
-                              const Text("LEFT", style: TextStyle(fontWeight: FontWeight.bold)),
                               Text(
                                 formatTime(leftSeconds),
                                 style: const TextStyle(
                                   fontSize: 36,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.green,
+                                  color: AppColors.primary_button,
                                 ),
                               ),
                             ],
                           ),
                           Column(
                             children: [
-                              const Text("RIGHT", style: TextStyle(fontWeight: FontWeight.bold)),
                               Text(
                                 formatTime(rightSeconds),
                                 style: const TextStyle(
                                   fontSize: 36,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.purple,
+                                  color: AppColors.primary_button,
                                 ),
                               ),
                             ],
                           ),
                         ],
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 24),
 
                       // Buttons điều khiển
                       Row(
@@ -274,15 +304,14 @@ class _AddFeedingPageState extends State<AddFeedingPage>
             ElevatedButton.icon(
               onPressed: _saveFeeding,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
+                backgroundColor: AppColors.primary_button,
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              icon: const Icon(Icons.save, color: Colors.white),
               label: const Text(
-                "Save Feeding",
+                "Lưu lại",
                 style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
@@ -293,8 +322,7 @@ class _AddFeedingPageState extends State<AddFeedingPage>
   }
 
   Widget _buildManualEntry() {
-    final _milkController = TextEditingController();
-    final _noteController = TextEditingController();
+
     return Padding(
       padding: const EdgeInsets.only(top: 20),
       child: ListView(
@@ -313,7 +341,7 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                     style: TextStyle( fontSize: 15),
                   ),
                   Text(
-                    "${_manualDuration.inMinutes.toString().padLeft(2, '0')}:${(_manualDuration.inSeconds % 60).toString().padLeft(2, '0')}",
+                    "${_leftDuration.inMinutes.toString().padLeft(2, '0')}:${(_manualDuration.inSeconds % 60).toString().padLeft(2, '0')}",
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ],
@@ -333,7 +361,7 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                     style: TextStyle(fontSize: 15),
                   ),
                   Text(
-                    "${_manualDuration.inMinutes.toString().padLeft(2, '0')}:${(_manualDuration.inSeconds % 60).toString().padLeft(2, '0')}",
+                    "${_rightDuration.inMinutes.toString().padLeft(2, '0')}:${(_manualDuration.inSeconds % 60).toString().padLeft(2, '0')}",
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ],
@@ -363,7 +391,7 @@ class _AddFeedingPageState extends State<AddFeedingPage>
             height: 110,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.orange,
+              color: Color(0xFFFFC8B8), // hồng nhạt pastel
               boxShadow: [
                 BoxShadow(
                   color: Colors.orange.withOpacity(0.4),
@@ -458,7 +486,7 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: AppColors.primary_button,
                       minimumSize: const Size(double.infinity, 48),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),

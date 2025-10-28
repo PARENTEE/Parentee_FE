@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:parentee_fe/features/auth/models/api_response.dart';
 import 'package:parentee_fe/services/shared_preferences_service.dart'; // Assuming this path is correct
 
@@ -49,6 +51,30 @@ class ApiServiceDio {
     );
 
     _instance._dioInitialized = true;
+  }
+
+  Future<ApiResponse> sendRequestWithLoading(BuildContext context,
+      String endpoint, {
+    String method = 'GET',
+    Map<String, dynamic>? data,
+  }) async {
+    // Show loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    var response = await _instance.sendRequest(
+      endpoint,
+      method: method,
+      data: data,
+    );
+
+    // Remove loading
+    Navigator.pop(context);
+
+    return response;
   }
 
   // Add a simple flag to track initialization

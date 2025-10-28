@@ -3,7 +3,12 @@ import 'package:parentee_fe/app/theme/app_colors.dart';
 import 'package:parentee_fe/features/auth/screens/MedicinePage/medicine_dashboard.dart';
 
 class EditBabyProfilePage extends StatefulWidget {
-  const EditBabyProfilePage({super.key});
+  final bool useToCreate;
+
+  const EditBabyProfilePage({
+    super.key,
+    required this.useToCreate,
+  });
 
   @override
   State<EditBabyProfilePage> createState() => _EditBabyProfilePageState();
@@ -21,8 +26,8 @@ class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
   String selectedWeightUnit = "kg";
 
   final List<String> ages = List.generate(12, (i) => "${i + 1} tháng");
-  final List<String> heightUnits = ["cm", "inch"];
-  final List<String> weightUnits = ["kg", "lbs"];
+  final List<String> heightUnits = ["cm"];
+  final List<String> weightUnits = ["kg"];
 
   @override
   Widget build(BuildContext context) {

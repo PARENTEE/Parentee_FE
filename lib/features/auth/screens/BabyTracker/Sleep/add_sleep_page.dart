@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
 import 'package:parentee_fe/features/auth/screens/SleepTracker/sleep_dashboard_page.dart';
-import '../../models/sleep_entry.dart';
-import '../../widgets/sleep_timer.dart';
+import 'package:parentee_fe/services/child_service.dart';
+import 'package:parentee_fe/services/popup_toast_service.dart';
+import '../../../models/sleep_entry.dart';
+import '../../../widgets/sleep_timer.dart';
 
 class AddSleepPage extends StatefulWidget {
-  const AddSleepPage({super.key});
+  final String childId;
+
+  const AddSleepPage({super.key, required this.childId});
 
   @override
   State<AddSleepPage> createState() => _AddSleepPageState();
@@ -54,16 +58,36 @@ class _AddSleepPageState extends State<AddSleepPage> {
     }
   }
 
-  void saveEntry() {
+  void saveEntry() async {
     final entry = SleepEntry(
       startTime: startTime,
       endTime: endTime,
       duration: duration,
     );
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => SleepDashboardPage(newEntry: entry)),
-    );
+
+    // Send API
+    final response = await ChildService.createSleepRecord(context, {
+      "childId": widget.childId,
+      "startTime": startTime.toIso8601String(),
+      "endTime": endTime.toIso8601String()
+    });
+
+    print(entry);
+
+
+    // SUCCESS
+    if(response.success){
+      PopUpToastService.showSuccessToast(context, "Thêm giấc ngủ thành công");
+      Navigator.pop(context);
+    }
+    // FAILED
+    else {
+      PopUpToastService.showErrorToast(context, "Thêm giấc ngủ không thành công");
+    }
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (_) => SleepDashboardPage(newEntry: entry)),
+    // );
   }
 
   // Gọi khi timer bắt đầu

@@ -1,28 +1,55 @@
 import 'package:flutter/material.dart';
-import 'package:parentee_fe/features/auth/screens/BabyTracker/DiaperChange/AddDiaperChangePage.dart';
-import 'package:parentee_fe/features/auth/screens/BabyTracker/Feeding/AddFeedingPage.dart';
-import 'package:parentee_fe/features/auth/screens/BabyTracker/SolidFood/AddSolidFoodPage.dart';
+import 'package:parentee_fe/features/auth/screens/BabyTracker/DiaperChange/diaper_change_page.dart';
+import 'package:parentee_fe/features/auth/screens/BabyTracker/Feeding/feeding_page.dart';
+import 'package:parentee_fe/features/auth/screens/BabyTracker/ParentMission/ParentMissionPage.dart';
+import 'package:parentee_fe/features/auth/screens/BabyTracker/Sleep/add_sleep_page.dart';
+import 'package:parentee_fe/features/auth/screens/BabyTracker/SolidFood/solid_food_page.dart';
 import 'package:parentee_fe/features/auth/screens/BabyTracker/edit_baby_profile.dart';
-import 'package:parentee_fe/features/auth/screens/NutrientPage/add_food.dart';
+import 'package:parentee_fe/features/auth/models/child.dart';
 
-class BabyProfilePage extends StatelessWidget {
-  const BabyProfilePage({super.key});
+class BabyProfilePage extends StatefulWidget {
+  final List<Child> children;
 
-  static final List<Map<String, dynamic>> activities = [
-    {"title": "Cho con bú", "subtitle": "1 phút trước", "icon": Icons.add, "navigateToPage": const AddFeedingPage() },
-    {"title": "Cho ăn", "subtitle": "2 giờ trước", "icon": Icons.restaurant, "navigateToPage": const AddSolidFoodPage() },
-    {"title": "Ngủ", "subtitle": "1 phút trước", "icon": Icons.bedtime},
-    {"title": "Đồ ăn", "subtitle": "1 phút trước", "icon": Icons.fastfood},
-    {
-      "title": "Thay tã",
-      "subtitle": "Vừa xong",
-      "icon": Icons.baby_changing_station,
-      "navigateToPage": const DiaperChangePage()
-    },
-  ];
+  const BabyProfilePage({super.key, required this.children});
+
+  @override
+  State<BabyProfilePage> createState() => _BabyProfilePageState();
+}
+
+class _BabyProfilePageState extends State<BabyProfilePage> {
+  late PageController _pageController;
+  int _currentIndex = 0;
+  int _currentChildren = 0;
+
+  static List<Map<String, dynamic>> activities = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.85);
+    activities = [
+      {"title": "Cho bú", "subtitle": "1 phút trước", "icon": Icons.add, "navigateToPage": AddFeedingPage(childId: widget.children[_currentChildren].id)},
+      {"title": "Cho ăn", "subtitle": "2 giờ trước", "icon": Icons.restaurant, "navigateToPage": const AddSolidFoodPage()},
+      {"title": "Ngủ", "subtitle": "1 phút trước", "icon": Icons.bedtime, "navigateToPage": AddSleepPage(childId: widget.children[_currentChildren].id)},
+      {"title": "Thay tã", "subtitle": "Vừa xong", "icon": Icons.baby_changing_station, "navigateToPage": DiaperChangePage(childId: widget.children[_currentChildren].id)},
+      // {"title": "Nhiệm vụ cha mẹ", "subtitle": "1 phút trước", "icon": Icons.safety_check, "navigateToPage": const ParentMissionPage()},
+    ];
+  }
+
+  void _onChildChanged(int newIndex) {
+    setState(() {
+      _currentChildren = newIndex;
+      // activities[0]["navigateToPage"] =
+      //     AddFeedingPage(childId: widget.children[_currentChildren].id);
+      // activities[3]["navigateToPage"] =
+      //     EditBabyProfilePage(child: widget.children[_currentChildren]);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final children = widget.children;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -43,41 +70,102 @@ class BabyProfilePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Avatar + tên + nút chỉnh sửa
-            const CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage("assets/images/nutrient.png"),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              "Bata Bean",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent.shade100,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 8,
-                ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const EditBabyProfilePage(),
+              Column(
+                children: [
+                  // --- Slide bé ---
+                  SizedBox(
+                    height: 260,
+                    child: PageView.builder(
+                      controller: _pageController,
+                      itemCount: children.length,
+                      onPageChanged: (index) => setState(() => _currentIndex = index),
+                      itemBuilder: (context, index) {
+                        final child = children[index];
+                        final isActive = index == _currentIndex;
+
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          margin: EdgeInsets.symmetric(horizontal: isActive ? 8 : 16, vertical: isActive ? 0 : 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.shade300,
+                                blurRadius: 6,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircleAvatar(
+                                radius: 50,
+                                backgroundImage: child.photoImageId != null
+                                    ? NetworkImage("https://yourapi.com/api/files/${child.photoImageId}")
+                                    : const AssetImage("assets/images/nutrient.png") as ImageProvider,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                child.fullName,
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 8),
+                              // Text(
+                              //   "${child.sex} • ${child.birthDate.toString().split('T').first}",
+                              //   style: const TextStyle(color: Colors.black54),
+                              // ),
+                              // const SizedBox(height: 16),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.redAccent.shade100,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const EditBabyProfilePage(useToCreate: false),
+                                    ),
+                                  );
+                                },
+                                child: const Text(
+                                  "Chỉnh sửa",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                );
-              },
-              child: const Text(
-                "Chỉnh sửa",
-                style: TextStyle(color: Colors.white),
+
+                  const SizedBox(height: 10),
+
+                  // Indicator nhỏ
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      children.length,
+                          (index) => AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        width: _currentIndex == index ? 20 : 8,
+                        height: 8,
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
+                          color: _currentIndex == index ? Colors.pinkAccent : Colors.grey.shade400,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
 
             const SizedBox(height: 24),
 
@@ -93,7 +181,6 @@ class BabyProfilePage extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 4),
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -106,11 +193,17 @@ class BabyProfilePage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
             // Danh sách hoạt động
             Expanded(
-              child: ListView.builder(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  childAspectRatio: 2,
+                ),
                 itemCount: activities.length,
                 itemBuilder: (context, index) {
                   final activity = activities[index];
@@ -118,14 +211,10 @@ class BabyProfilePage extends StatelessWidget {
                     title: activity["title"],
                     subtitle: activity["subtitle"],
                     icon: activity["icon"],
-                    onTap: () => {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => activity["navigateToPage"],
-                        ),
-                      )
-                    },
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => activity["navigateToPage"]),
+                    ),
                   );
                 },
               ),
@@ -177,9 +266,8 @@ class _ActivityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
-      onTap: onTap, // 👈 handle taps here
+      onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 14),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.green.shade50,
