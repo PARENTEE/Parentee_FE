@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
-import 'package:parentee_fe/features/auth/screens/MedicinePage/medicine_dashboard.dart';
+import 'package:parentee_fe/features/auth/models/api_response.dart';
+import 'package:parentee_fe/features/auth/screens/BabyTracker/baby_profile.dart';
+import 'package:parentee_fe/services/child_service.dart';
+import 'package:parentee_fe/services/popup_toast_service.dart';
 
 class EditBabyProfilePage extends StatefulWidget {
-  final bool useToCreate;
+  final String childId;
 
   const EditBabyProfilePage({
     super.key,
-    required this.useToCreate,
+    required this.childId,
   });
 
   @override
@@ -15,10 +19,10 @@ class EditBabyProfilePage extends StatefulWidget {
 }
 
 class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
-  final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController fullNameController = TextEditingController();
   final TextEditingController heightValueController = TextEditingController();
   final TextEditingController weightValueController = TextEditingController();
+  DateTime? selectedBirthDate;
 
   String gender = "Trai";
   String? selectedAge;
@@ -28,6 +32,34 @@ class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
   final List<String> ages = List.generate(12, (i) => "${i + 1} tháng");
   final List<String> heightUnits = ["cm"];
   final List<String> weightUnits = ["kg"];
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.childId.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadChildData();
+      });
+    }
+  }
+
+  Future<void> _loadChildData() async {
+     final response = await ChildService.getChildById(context, widget.childId);
+
+      final data = response.data;
+      if (data != null) {
+        setState(() {
+          fullNameController.text = data["fullName"] ?? "";
+          heightValueController.text = data["height"].toString();
+          weightValueController.text = data["weight"].toString();
+          selectedBirthDate = DateTime.tryParse(data["birthDate"] ?? "");
+          gender = (data["gender"] == 0) ? "Trai" : "Gái";
+        });
+      }
+      else PopUpToastService.showErrorToast(context, "Không tải được dữ liệu bé");
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +112,7 @@ class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
             const SizedBox(height: 24),
 
             // Họ và Tên
-            _buildInput("Họ", "Nhập họ", lastNameController),
-            const SizedBox(height: 16),
-            _buildInput("Tên", "Nhập tên", firstNameController),
+            _buildInput("Họ và tên", "Nhập họ và tên", fullNameController),
             const SizedBox(height: 16),
 
             // Giới tính
@@ -97,12 +127,37 @@ class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
             const SizedBox(height: 16),
 
             // Độ tuổi
-            _buildLabel("Độ tuổi"),
-            _buildDropdown(
-              value: selectedAge,
-              hint: "Chọn độ tuổi",
-              items: ages,
-              onChanged: (val) => setState(() => selectedAge = val),
+            // _buildLabel("Độ tuổi"),
+            // _buildDropdown(
+            //   value: selectedAge,
+            //   hint: "Chọn độ tuổi",
+            //   items: ages,
+            //   onChanged: (val) => setState(() => selectedAge = val),
+            // ),
+            // const SizedBox(height: 16),
+
+            // Ngày sinh
+            _buildLabel("Ngày sinh"),
+            GestureDetector(
+              onTap: () => _selectDate(context),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Text(
+                  selectedBirthDate != null
+                      ? "${selectedBirthDate!.day}/${selectedBirthDate!.month}/${selectedBirthDate!.year}"
+                      : "Chọn ngày sinh",
+                  style: TextStyle(
+                    color: selectedBirthDate != null ? Colors.black87 : Colors.grey,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 16),
 
@@ -173,8 +228,8 @@ class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
                   ),
                 ),
                 onPressed: () {
-                  debugPrint("Họ: ${lastNameController.text}");
-                  debugPrint("Tên: ${firstNameController.text}");
+                  _saveChild();
+                  debugPrint("Tên: ${fullNameController.text}");
                   debugPrint("Giới tính: $gender");
                   debugPrint("Tuổi: $selectedAge");
                   debugPrint(
@@ -234,7 +289,12 @@ class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
   }) {
     return TextFormField(
       controller: controller,
-      keyboardType: inputType,
+      keyboardType: inputType == TextInputType.number
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : inputType,
+      inputFormatters: inputType == TextInputType.text
+          ? [] // Nhận tất cả ký tự
+          : [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
       decoration: InputDecoration(
         hintText: hint,
         filled: true,
@@ -250,6 +310,7 @@ class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
       ),
     );
   }
+
 
   Widget _buildDropdown({
     required String? value,
@@ -303,5 +364,55 @@ class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
         ),
       ),
     );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedBirthDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+      locale: const Locale('vi', 'VN'),
+    );
+    if (picked != null && picked != selectedBirthDate) {
+      setState(() {
+        selectedBirthDate = picked;
+      });
+    }
+  }
+
+  void _saveChild() async {
+    var data = {
+      "fullName": fullNameController.text.trim(),
+      "birthDate": selectedBirthDate?.toIso8601String().split('T').first,
+      "gender": gender == "Trai" ? 0 : 1,
+      "height": double.tryParse(heightValueController.text),
+      "weight": double.tryParse(weightValueController.text),
+      "notes": "string"
+    };
+
+    // Call API
+    ApiResponse response = widget.childId.isEmpty ?
+        await ChildService.createChild(context, data) :
+        await ChildService.updateChild(context, widget.childId, data);
+
+    if(response.success){
+      PopUpToastService.showSuccessToast(context, "Tạo em bé thành công");
+
+      if(widget.childId.isNotEmpty) Navigator.pop(context);
+      else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const BabyProfilePage(children: [])
+          ),
+        );
+      }
+
+    }
+    else {
+      PopUpToastService.showErrorToast(context, "Tạo em bé không thành công");
+    }
+
   }
 }

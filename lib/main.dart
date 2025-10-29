@@ -5,6 +5,7 @@ import 'package:parentee_fe/features/auth/screens/HomePage/home_page.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/onboarding-page.dart';
 import 'package:parentee_fe/features/auth/wrapper/auth_wrapper.dart';
 import 'package:parentee_fe/services/api_service_dio.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   // 1. Must be the very first call in main()
@@ -35,6 +36,16 @@ class MyApp extends StatelessWidget {
       ),
       // Trang khởi động là OnboardingPage
       home: const AuthWrapper(),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('vi', 'VN'), // Tiếng Việt
+        Locale('en', 'US'), // Tiếng Anh
+      ],
+      locale: const Locale('vi', 'VN'),
 
       routes: {"/home": (context) => const HomePage()},
     );

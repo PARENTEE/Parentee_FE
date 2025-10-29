@@ -30,18 +30,8 @@ class _BottomNavState extends State<BottomNav> {
     }
 
     if (index == 2) {
-      // show loading dialog
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => const Center(child: CircularProgressIndicator()),
-      );
-
       // 1. Get children in current family
-      final response = await ChildService.getChildrenInCurrentFamily();
-
-      // Remove loading
-      Navigator.pop(context);
+      final response = await ChildService.getChildrenInCurrentFamily(context);
 
       if(response.success){
         final List<dynamic>? data = response.data;
@@ -49,7 +39,6 @@ class _BottomNavState extends State<BottomNav> {
         final List<Child> children = (data != null && data.isNotEmpty)
             ? data.map((e) => Child.fromJson(e)).toList()
             : [];
-
 
         // 2. If there are, navigate to Baby profile page
         if(!children.isEmpty){
@@ -61,7 +50,7 @@ class _BottomNavState extends State<BottomNav> {
           );
         }
         else {
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => BabyPreviewPage(),
@@ -71,7 +60,7 @@ class _BottomNavState extends State<BottomNav> {
       }
       else if(!response.success){
         print("ERROR: ${response.message}");
-        PopUpToastService.showSuccessToast(context, "Lấy thông tin các bé không thành công.");
+        PopUpToastService.showErrorToast(context, "Lấy thông tin các bé không thành công.");
       }
     }
 

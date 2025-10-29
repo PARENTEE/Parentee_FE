@@ -6,6 +6,8 @@ import 'package:parentee_fe/features/auth/screens/BabyTracker/Sleep/add_sleep_pa
 import 'package:parentee_fe/features/auth/screens/BabyTracker/SolidFood/solid_food_page.dart';
 import 'package:parentee_fe/features/auth/screens/BabyTracker/edit_baby_profile.dart';
 import 'package:parentee_fe/features/auth/models/child.dart';
+import 'package:parentee_fe/services/child_service.dart';
+import 'package:parentee_fe/services/popup_toast_service.dart';
 
 class BabyProfilePage extends StatefulWidget {
   final List<Child> children;
@@ -20,21 +22,43 @@ class _BabyProfilePageState extends State<BabyProfilePage> {
   late PageController _pageController;
   int _currentIndex = 0;
   int _currentChildren = 0;
-
-  static List<Map<String, dynamic>> activities = [];
+  List<Child> _children = [];
+  List<Map<String, dynamic>> activities = [];
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 0.85);
-    activities = [
-      {"title": "Cho bú", "subtitle": "1 phút trước", "icon": Icons.add, "navigateToPage": AddFeedingPage(childId: widget.children[_currentChildren].id)},
-      {"title": "Cho ăn", "subtitle": "2 giờ trước", "icon": Icons.restaurant, "navigateToPage": const AddSolidFoodPage()},
-      {"title": "Ngủ", "subtitle": "1 phút trước", "icon": Icons.bedtime, "navigateToPage": AddSleepPage(childId: widget.children[_currentChildren].id)},
-      {"title": "Thay tã", "subtitle": "Vừa xong", "icon": Icons.baby_changing_station, "navigateToPage": DiaperChangePage(childId: widget.children[_currentChildren].id)},
-      // {"title": "Nhiệm vụ cha mẹ", "subtitle": "1 phút trước", "icon": Icons.safety_check, "navigateToPage": const ParentMissionPage()},
-    ];
+
+    _children = widget.children;
+    if(_children.isEmpty) _loadChildren();
   }
+
+  Future<void> _loadChildren() async {
+    final response = await ChildService.getChildrenInCurrentFamily(context);
+
+    if (response.success) {
+      final List<dynamic>? data = response.data;
+      final List<Child> children = (data != null && data.isNotEmpty)
+          ? data.map((e) => Child.fromJson(e)).toList()
+          : [];
+
+      if (children.isEmpty) {
+        PopUpToastService.showErrorToast(context, "Hiện không có bé nào cả");
+        Navigator.pop(context); // 👉 Thoát trang ngay
+        return;
+      } else {
+        setState(() {
+          _children = children;
+        });
+        return;
+      }
+    } else {
+      PopUpToastService.showErrorToast(context, "Lấy thông tin các bé không thành công.");
+      Navigator.pop(context); // 👉 Thoát nếu gọi API lỗi
+    }
+  }
+
 
   void _onChildChanged(int newIndex) {
     setState(() {
@@ -49,6 +73,14 @@ class _BabyProfilePageState extends State<BabyProfilePage> {
   @override
   Widget build(BuildContext context) {
     final children = widget.children;
+
+    activities = [
+      {"title": "Cho bú", "subtitle": "1 phút trước", "icon": Icons.add, "navigateToPage": AddFeedingPage(childId: _children[_currentChildren].id)},
+      {"title": "Cho ăn", "subtitle": "2 giờ trước", "icon": Icons.restaurant, "navigateToPage": const AddSolidFoodPage()},
+      {"title": "Ngủ", "subtitle": "1 phút trước", "icon": Icons.bedtime, "navigateToPage": AddSleepPage(childId: _children[_currentChildren].id)},
+      {"title": "Thay tã", "subtitle": "Vừa xong", "icon": Icons.baby_changing_station, "navigateToPage": DiaperChangePage(childId: _children[_currentChildren].id)},
+      // {"title": "Nhiệm vụ cha mẹ", "subtitle": "1 phút trước", "icon": Icons.safety_check, "navigateToPage": const ParentMissionPage()},
+    ];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -129,7 +161,7 @@ class _BabyProfilePageState extends State<BabyProfilePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const EditBabyProfilePage(useToCreate: false),
+                                      builder: (context) => EditBabyProfilePage(childId: widget.children[_currentChildren].id),
                                     ),
                                   );
                                 },

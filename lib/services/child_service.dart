@@ -9,10 +9,44 @@ class ChildService {
   // -- GET
   // ------------------
 
-  static Future<ApiResponse> getChildrenInCurrentFamily() async {
-    return await _apiServiceDioInstance.sendRequest(
-      'current-family',
+  static Future<ApiResponse> getChildrenInCurrentFamily(BuildContext context) async {
+    return await _apiServiceDioInstance.sendRequestWithLoading(
+      context,
+      'child/current-family',
       method: 'GET',
+    );
+  }
+
+  static Future<ApiResponse> getChildById(BuildContext context, String childId) async {
+    return await _apiServiceDioInstance.sendRequestWithLoading(
+      context,
+      'child/${childId}',
+      method: 'GET',
+    );
+  }
+
+  static Future<ApiResponse> createChild(
+      BuildContext context,
+      dynamic data,
+      ) async {
+    return await _apiServiceDioInstance.sendRequestWithLoading(
+      context,
+      'child',
+      method: 'POST',
+      data: data,
+    );
+  }
+
+  static Future<ApiResponse> updateChild(
+      BuildContext context,
+      String childId,
+      dynamic data,
+      ) async {
+    return await _apiServiceDioInstance.sendRequestWithLoading(
+      context,
+      'child/${childId}',
+      method: 'PUT',
+      data: data,
     );
   }
 

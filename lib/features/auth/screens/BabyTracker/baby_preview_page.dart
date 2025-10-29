@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
 import 'package:parentee_fe/features/auth/screens/BabyTracker/edit_baby_profile.dart';
-import 'package:parentee_fe/services/popup_toast_service.dart';
 
 class BabyPreviewPage extends StatefulWidget {
   const BabyPreviewPage({super.key});
@@ -85,7 +84,7 @@ class _BabyPreviewPageState extends State<BabyPreviewPage> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const EditBabyProfilePage(useToCreate: true,)
+                      builder: (context) => EditBabyProfilePage(childId: "")
                     ),
                   );
                 },
