@@ -105,11 +105,11 @@ class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
               ],
             ),
             const SizedBox(height: 12),
-            const Text(
-              "Bata Bean",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 24),
+            // const Text(
+            //   "Bata Bean",
+            //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            // ),
+            // const SizedBox(height: 24),
 
             // Họ và Tên
             _buildInput("Họ và tên", "Nhập họ và tên", fullNameController),
@@ -388,7 +388,7 @@ class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
       "gender": gender == "Trai" ? 0 : 1,
       "height": double.tryParse(heightValueController.text),
       "weight": double.tryParse(weightValueController.text),
-      "notes": "string"
+      "notes": ""
     };
 
     // Call API
@@ -397,9 +397,9 @@ class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
         await ChildService.updateChild(context, widget.childId, data);
 
     if(response.success){
-      PopUpToastService.showSuccessToast(context, "Tạo em bé thành công");
+      PopUpToastService.showSuccessToast(context, response.message.toString());
 
-      if(widget.childId.isNotEmpty) Navigator.pop(context);
+      if(widget.childId.isNotEmpty) Navigator.pop(context, true);
       else {
         Navigator.pushReplacement(
           context,
@@ -411,7 +411,7 @@ class _EditBabyProfilePageState extends State<EditBabyProfilePage> {
 
     }
     else {
-      PopUpToastService.showErrorToast(context, "Tạo em bé không thành công");
+      PopUpToastService.showErrorToast(context, response.message.toString());
     }
 
   }

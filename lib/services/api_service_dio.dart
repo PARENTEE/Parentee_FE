@@ -160,7 +160,7 @@ class ApiServiceDio {
 
       final Map<String, dynamic> jsonBody =
           response.data is Map ? response.data : {};
-      return ApiResponse(success: true, data: jsonBody['data']);
+      return ApiResponse(success: true, message: jsonBody['message'] ,data: jsonBody['data']);
     } on DioException catch (e) {
       return _handleDioError(e);
     } catch (e) {
