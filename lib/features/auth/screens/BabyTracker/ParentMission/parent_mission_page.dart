@@ -1,30 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
+import 'package:parentee_fe/features/auth/screens/BabyTracker/ParentMission/show_add_task_dialog.dart';
+import 'package:parentee_fe/services/child_service.dart';
+import 'package:parentee_fe/services/popup_toast_service.dart';
 
 class ParentMissionPage extends StatefulWidget {
-  const ParentMissionPage({super.key});
+  final String childId;
+  const ParentMissionPage({super.key, required this.childId});
 
   @override
   State<ParentMissionPage> createState() => _ParentMissionPageState();
 }
 
 class _ParentMissionPageState extends State<ParentMissionPage> {
-  int selectedDay = DateTime.now().day;
+  DateTime selectedDate = DateTime.now();
 
-  final List<Map<String, dynamic>> missions = [
-    {"title": "Cho bé bú", "time": "07:30", "done": true},
-    {"title": "Thay tã", "time": "10:30", "done": false},
-    {"title": "Massage cho bé", "time": "13:00", "done": false},
-    {"title": "Chơi với bé", "time": "15:30", "done": false},
-    {"title": "Tắm cho bé", "time": "18:00", "done": false},
-    {"title": "Dỗ bé ngủ", "time": "21:00", "done": false},
-  ];
+  final List<Map<String, dynamic>> missions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
+  }
+
+  Future<void> _loadData() async {
+    final response = await ChildService.getTaskByChildIdAndDate(context, widget.childId, selectedDate);
+
+    if(response.success && response.data != null) {
+      final List<dynamic> data = response.data;
+
+      setState(() {
+        missions.clear();
+        missions.addAll(data.map((task) {
+          final startsAt = DateTime.parse(task['startsAt']);
+          final endsAt = DateTime.parse(task['endsAt']);
+          final timeFormat = DateFormat('HH:mm');
+
+          return {
+            'id': task['id'],
+            'title': task['title'],
+            'time': '${timeFormat.format(startsAt)} - ${timeFormat.format(endsAt)}',
+            'done': task['status'] == 1, // or adjust if you have another meaning
+          };
+        }).toList());
+      });
+    }
+    else {
+      PopUpToastService.showErrorToast(context, response.message.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     int doneCount = missions.where((m) => m["done"]).length;
-    double progress = doneCount / missions.length;
+    double progress = 0;
+    if (missions.length > 0) {
+      progress = doneCount / missions.length;
+    }
 
     return Scaffold(
       // backgroundColor: const Color(0xFFFFF6F6),
@@ -47,8 +82,9 @@ class _ParentMissionPageState extends State<ParentMissionPage> {
             _buildMissionList(),
             const SizedBox(height: 16),
             _buildProgressBar(progress, doneCount),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             _buildAddButton(),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -66,9 +102,14 @@ class _ParentMissionPageState extends State<ParentMissionPage> {
         itemCount: days.length,
         itemBuilder: (context, index) {
           final d = days[index];
-          final isSelected = d.day == selectedDay;
+          final isSelected = d.day == selectedDate.day &&
+                             d.month == selectedDate.month &&
+                             d.year == selectedDate.year;
           return GestureDetector(
-            onTap: () => setState(() => selectedDay = d.day),
+            onTap: () async {
+              setState(() => selectedDate = d);
+              await _loadData();
+            },
             child: Container(
               width: 55,
               margin: const EdgeInsets.symmetric(horizontal: 6),
@@ -135,8 +176,17 @@ class _ParentMissionPageState extends State<ParentMissionPage> {
               inactiveTrackColor: AppColors.sub_color,
               trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
               value: m["done"],
-              onChanged: (val) {
-                setState(() => m["done"] = val);
+              onChanged: (val) async {
+                final response = await ChildService.updateTaskStatus(context, m["id"], m["done"] ? 1 : 0);
+
+                if(response.success){
+                  PopUpToastService.showSuccessToast(context, "Cập nhật thành công");
+                  setState(() => m["done"] = val);
+                }
+                else {
+                  PopUpToastService.showErrorToast(context, "Cập nhật thất bại");
+                }
+
               },
             ),
           ),
@@ -146,6 +196,7 @@ class _ParentMissionPageState extends State<ParentMissionPage> {
   }
 
   Widget _buildProgressBar(double progress, int doneCount) {
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -173,10 +224,25 @@ class _ParentMissionPageState extends State<ParentMissionPage> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
-        onPressed: () {},
+        onPressed: () async {
+          final result = await TaskDialog.showAddTaskDialog(
+            context: context,
+            childId: widget.childId,
+            selectedDate: selectedDate,
+            onAddTask: (newTask) {
+              setState(() {
+                missions.add(newTask);
+              });
+            },
+          );
+
+          if (result == true) {
+            await _loadData();
+          }
+        },
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text(
-          "Thêm nhiệm vụ mới",
+          "Thêm nhiệm vụ",
           style: TextStyle(color: Colors.white)
         ),
         style: ElevatedButton.styleFrom(
@@ -185,6 +251,33 @@ class _ParentMissionPageState extends State<ParentMissionPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
+        ),
+      ),
+    );
+  }
+
+
+  Widget _buildSaveButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () {        },
+        icon: const Icon(Icons.save, color: AppColors.primary_button),
+        label: const Text(
+            "Lưu thay đổi",
+            style: TextStyle(color: AppColors.primary_button)
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: const BorderSide(
+              color: AppColors.primary_button, // màu viền
+              width: 2, // độ dày viền
+            ),
+          ),
+          elevation: 0, // bỏ đổ bóng nếu muốn kiểu phẳng
         ),
       ),
     );

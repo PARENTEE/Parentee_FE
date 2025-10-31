@@ -114,7 +114,7 @@ class _BabyProfilePageState extends State<BabyProfilePage> {
     ];
 
     otherActivities = [
-      {"title": "Nhiệm vụ của bố và mẹ", "subtitle": "1 phút trước", "icon": Icons.task, "navigateToPage": ParentMissionPage()},
+      {"title": "Nhiệm vụ của bố và mẹ", "subtitle": "1 phút trước", "icon": Icons.task, "navigateToPage": ParentMissionPage(childId: _children[_currentChildren].id)},
       {"title": "Tổng quan", "subtitle": "1 phút trước", "icon": Icons.report, "navigateToPage": BabyTrackerTimelinePage()},
     ];
 

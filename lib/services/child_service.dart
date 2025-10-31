@@ -25,6 +25,32 @@ class ChildService {
     );
   }
 
+  static Future<ApiResponse> getTaskByChildIdAndDate(BuildContext context, String childId, DateTime date) async {
+    return await _apiServiceDioInstance.sendRequestWithLoading(
+      context,
+      'task/${childId}/${date.toIso8601String().split('T').first}',
+      method: 'GET',
+    );
+  }
+
+  static Future<ApiResponse> createTask(BuildContext context, dynamic data) async {
+    return await _apiServiceDioInstance.sendRequestWithLoading(
+      context,
+      'task',
+      method: 'POST',
+      data: data,
+    );
+  }
+
+  static Future<ApiResponse> updateTaskStatus(BuildContext context, String childId, int status) async {
+    return await _apiServiceDioInstance.sendRequestWithLoading(
+      context,
+      'task/${childId}/${status}',
+      method: 'PUT',
+    );
+  }
+
+
   static Future<ApiResponse> createChild(
       BuildContext context,
       dynamic data,
