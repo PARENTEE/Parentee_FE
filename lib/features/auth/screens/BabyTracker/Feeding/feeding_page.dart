@@ -22,7 +22,7 @@ class _AddFeedingPageState extends State<AddFeedingPage>
   bool rightRunning = false;
   Timer? leftTimer;
   Timer? rightTimer;
-  DateTime? startTime;
+  DateTime startTime = DateTime.now();
 
   Duration _leftDuration = const Duration(minutes: 0, seconds: 0);
   Duration _rightDuration = const Duration(minutes: 0, seconds: 0);

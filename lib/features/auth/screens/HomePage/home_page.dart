@@ -31,18 +31,18 @@ class HomePage extends StatelessWidget {
       "page": const WeatherPage(),
       "color": const Color(0xFFD0EAF2),
     },
-    {
-      "icon": "assets/images/drugs.png",
-      "label": "Thuốc",
-      "page": const MedicinePage(),
-      "color": const Color(0xFFFBE7C6),
-    },
-    {
-      "icon": "assets/images/nutrient.png",
-      "label": "Dinh dưỡng",
-      "page": const NutrientPage(),
-      "color": const Color(0xFFE0F7E9),
-    },
+    // {
+    //   "icon": "assets/images/drugs.png",
+    //   "label": "Thuốc",
+    //   "page": const MedicinePage(),
+    //   "color": const Color(0xFFFBE7C6),
+    // },
+    // {
+    //   "icon": "assets/images/nutrient.png",
+    //   "label": "Dinh dưỡng",
+    //   "page": const NutrientPage(),
+    //   "color": const Color(0xFFE0F7E9),
+    // },
     // {
     //   "icon": "assets/images/sleep.png",
     //   "label": "Giấc ngủ",

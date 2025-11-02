@@ -269,7 +269,7 @@ class _DiaperChangePageState extends State<DiaperChangePage> {
   void saveDiaperChange() async {
     final response = await ChildService.createDiaperChangeRecord(context, {
       "childId": widget.childId,
-      "changedAt": changedTime?.toIso8601String(),
+      "changedAt": changedTime?.toUtc().toIso8601String(),
       "type": selectedType,
       "diaperQuantity": quantity.toInt(),
       "color": selectedColor,

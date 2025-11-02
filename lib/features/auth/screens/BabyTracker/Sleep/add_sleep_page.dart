@@ -68,12 +68,9 @@ class _AddSleepPageState extends State<AddSleepPage> {
     // Send API
     final response = await ChildService.createSleepRecord(context, {
       "childId": widget.childId,
-      "startTime": startTime.toIso8601String(),
-      "endTime": endTime.toIso8601String()
+      "startTime": startTime.toUtc().toIso8601String(),
+      "endTime": endTime.toUtc().toIso8601String()
     });
-
-    print(entry);
-
 
     // SUCCESS
     if(response.success){

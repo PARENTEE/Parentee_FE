@@ -25,6 +25,14 @@ class ChildService {
     );
   }
 
+  static Future<ApiResponse> getChildReport(BuildContext context, String childId, DateTime date) async {
+    return await _apiServiceDioInstance.sendRequestWithLoading(
+      context,
+      'child/report/${childId}/${date.toIso8601String().split('T').first}',
+      method: 'GET',
+    );
+  }
+
   static Future<ApiResponse> getTaskByChildIdAndDate(BuildContext context, String childId, DateTime date) async {
     return await _apiServiceDioInstance.sendRequestWithLoading(
       context,
@@ -79,6 +87,15 @@ class ChildService {
   static Future<ApiResponse> createFeeding(dynamic data) async {
     return await _apiServiceDioInstance.sendRequest(
       'feeding',
+      method: 'POST',
+      data: data,
+    );
+  }
+
+  static Future<ApiResponse> createSolidFood(BuildContext context, dynamic data) async {
+    return await _apiServiceDioInstance.sendRequestWithLoading(
+      context,
+      'solid-food',
       method: 'POST',
       data: data,
     );

@@ -62,15 +62,15 @@ class _FamilyPageState extends State<FamilyPage> {
 
             const SizedBox(height: 20),
 
-            // ----- Các con -----
-            const Text(
-              "Các con",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const Divider(),
-            ..._children.map((child) => buildChildrenCard(context, child)),
-
-            const SizedBox(height: 20),
+            // // ----- Các con -----
+            // const Text(
+            //   "Các con",
+            //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            // ),
+            // const Divider(),
+            // ..._children.map((child) => buildChildrenCard(context, child)),
+            //
+            // const SizedBox(height: 20),
 
             // ----- Đã mời -----
             const Text(
@@ -209,7 +209,18 @@ class _FamilyPageState extends State<FamilyPage> {
                         controller: scrollController,
                         thumbVisibility: true,
                         radius: const Radius.circular(10),
-                        child: ListView.builder(
+                        child: filteredUsers.isEmpty
+                            ? const Center(
+                          child: Text(
+                            "Không có thành viên nào để mời",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        )
+                            : ListView.builder(
                           controller: scrollController,
                           itemCount: filteredUsers.length,
                           itemBuilder: (context, index) {

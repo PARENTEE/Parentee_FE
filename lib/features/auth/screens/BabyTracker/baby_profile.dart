@@ -96,9 +96,26 @@ class _BabyProfilePageState extends State<BabyProfilePage> {
           ),
           title: const Text(
             "Bé yêu",
-            style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: Colors.black87,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add, color: Colors.black87),
+              tooltip: "Thêm bé",
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditBabyProfilePage(childId: "")
+                  ),
+                );
+              },
+            ),
+          ],
         ),
         body: const Center(
           child: CircularProgressIndicator(),
@@ -108,14 +125,14 @@ class _BabyProfilePageState extends State<BabyProfilePage> {
 
     activities = [
       {"title": "Cho bú", "subtitle": "1 phút trước", "icon": Icons.add, "navigateToPage": AddFeedingPage(childId: _children[_currentChildren].id)},
-      {"title": "Cho ăn", "subtitle": "2 giờ trước", "icon": Icons.restaurant, "navigateToPage": const AddSolidFoodPage()},
+      {"title": "Cho ăn", "subtitle": "2 giờ trước", "icon": Icons.restaurant, "navigateToPage": AddSolidFoodPage(childId: _children[_currentChildren].id)},
       {"title": "Ngủ", "subtitle": "1 phút trước", "icon": Icons.bedtime, "navigateToPage": AddSleepPage(childId: _children[_currentChildren].id)},
       {"title": "Thay tã", "subtitle": "Vừa xong", "icon": Icons.baby_changing_station, "navigateToPage": DiaperChangePage(childId: _children[_currentChildren].id)},
     ];
 
     otherActivities = [
-      {"title": "Nhiệm vụ của bố và mẹ", "subtitle": "1 phút trước", "icon": Icons.task, "navigateToPage": ParentMissionPage(childId: _children[_currentChildren].id)},
-      {"title": "Tổng quan", "subtitle": "1 phút trước", "icon": Icons.report, "navigateToPage": BabyTrackerTimelinePage()},
+      {"title": "Nhiệm vụ", "subtitle": "1 phút trước", "icon": Icons.task, "navigateToPage": ParentMissionPage(childId: _children[_currentChildren].id)},
+      {"title": "Tổng quan", "subtitle": "1 phút trước", "icon": Icons.report, "navigateToPage": BabyTrackerTimelinePage(childId: _children[_currentChildren].id,date: DateTime.now())},
     ];
 
     return Scaffold(
@@ -132,6 +149,20 @@ class _BabyProfilePageState extends State<BabyProfilePage> {
           style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add, color: Colors.black87),
+            tooltip: "Thêm bé",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EditBabyProfilePage(childId: "")
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -280,7 +311,7 @@ class _BabyProfilePageState extends State<BabyProfilePage> {
                   crossAxisCount: 2,
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
-                  childAspectRatio: 2.2,
+                  childAspectRatio: 3,
                 ),
                 itemCount: activities.length,
                 itemBuilder: (context, index) {
@@ -307,10 +338,10 @@ class _BabyProfilePageState extends State<BabyProfilePage> {
             Expanded(
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 1,
+                  crossAxisCount:2,
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
-                  childAspectRatio: 4.5,
+                  childAspectRatio: 3,
                 ),
                 itemCount: otherActivities.length,
                 itemBuilder: (context, index) {
@@ -319,6 +350,10 @@ class _BabyProfilePageState extends State<BabyProfilePage> {
                     title: activity["title"],
                     subtitle: activity["subtitle"],
                     icon: activity["icon"],
+                    backGroundColor: Colors.redAccent.shade100,
+                    iconColor: Colors.white,
+                    textColor: Colors.white,
+
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => activity["navigateToPage"]),
@@ -362,18 +397,24 @@ class _BabyProfilePageState extends State<BabyProfilePage> {
     return months[m];
   }
 }
-
 class _ActivityCard extends StatelessWidget {
   final String title;
-  final String subtitle;
+  final String? subtitle; // optional
   final IconData icon;
   final VoidCallback? onTap;
 
+  final Color backGroundColor;
+  final Color iconColor;
+  final Color textColor;
+
   const _ActivityCard({
     required this.title,
-    required this.subtitle,
+    this.subtitle,
     required this.icon,
     this.onTap,
+    this.backGroundColor = const Color(0xFFD0F0C0), // default light green
+    this.iconColor = const Color(0xFF2E7D32), // dark green
+    this.textColor = Colors.black87,
   });
 
   @override
@@ -384,34 +425,25 @@ class _ActivityCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.green.shade50,
+          color: backGroundColor, // ✅ use variable
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center, // ✅ vertical center
           children: [
             CircleAvatar(
-              backgroundColor: Colors.green.shade100,
-              child: Icon(icon, color: Colors.green.shade600),
+              backgroundColor: backGroundColor.withOpacity(0.6),
+              child: Icon(icon, color: iconColor),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(fontSize: 13, color: Colors.grey),
-                  ),
-                ],
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: textColor, // ✅ use variable
+                ),
               ),
             ),
           ],

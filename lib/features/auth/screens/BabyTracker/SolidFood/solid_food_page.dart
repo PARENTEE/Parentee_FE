@@ -2,10 +2,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:parentee_fe/app/theme/app_colors.dart'; // dùng màu chính của app
+import 'package:parentee_fe/app/theme/app_colors.dart';
+import 'package:parentee_fe/services/child_service.dart';
+import 'package:parentee_fe/services/popup_toast_service.dart'; // dùng màu chính của app
 
 class AddSolidFoodPage extends StatefulWidget {
-  const AddSolidFoodPage({super.key});
+  final String childId;
+  const AddSolidFoodPage({super.key, required this.childId});
 
   @override
   State<AddSolidFoodPage> createState() => _AddSolidFoodPageState();
@@ -23,6 +26,14 @@ class _AddSolidFoodPageState extends State<AddSolidFoodPage> {
 
   String _selectedUnit = "g";
   final List<String> _units = ["g", "ml", "tbsp", "tsp", "pieces"];
+
+  final Map<String, int> unitMap = {
+    "g": 0,
+    "ml": 1,
+    "tbsp": 2,
+    "tsp": 3,
+    "pieces": 4,
+  };
 
   final List<String> _presets = [
     "Banana",
@@ -221,14 +232,6 @@ class _AddSolidFoodPageState extends State<AddSolidFoodPage> {
   }
 
   Future<void> _pickDateTime() async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: _selectedDateTime,
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
-    );
-    if (date == null) return;
-
     final time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
@@ -236,10 +239,12 @@ class _AddSolidFoodPageState extends State<AddSolidFoodPage> {
     if (time == null) return;
 
     setState(() {
+      // Giữ nguyên ngày hôm nay, chỉ thay giờ phút
+      final now = DateTime.now();
       _selectedDateTime = DateTime(
-        date.year,
-        date.month,
-        date.day,
+        now.year,
+        now.month,
+        now.day,
         time.hour,
         time.minute,
       );
@@ -253,12 +258,36 @@ class _AddSolidFoodPageState extends State<AddSolidFoodPage> {
     }
   }
 
-  void _saveEntry() {
+
+
+  void _saveEntry() async {
     if (!_formKey.currentState!.validate()) return;
 
-    debugPrint("Tên món: ${_foodController.text}");
-    debugPrint("Số lượng: ${_amountController.text} $_selectedUnit");
-    debugPrint("Thời gian: $_selectedDateTime");
-    debugPrint("Ghi chú: ${_noteController.text}");
+    // Lấy dữ liệu từ form
+    final name = _foodController.text.trim();
+    final quantity = double.tryParse(_amountController.text) ?? 0;
+    final int unitValue = unitMap[_selectedUnit] ?? 0;
+    final notes = _noteController.text.trim();
+
+    // Gửi request
+    final requestBody = {
+      "childId": widget.childId,
+      "ateAt": _selectedDateTime.toIso8601String(),
+      "name": name,
+      "quantity": quantity,
+      "unit": unitValue,
+      "notes": notes,
+    };
+
+    debugPrint("📤 Sending: $requestBody");
+
+    final response = await ChildService.createSolidFood(context, requestBody);
+
+    if (response.success) {
+      Navigator.pop(context);
+      PopUpToastService.showSuccessToast(context, "Cho bé ăn thành công");
+    } else {
+      PopUpToastService.showErrorToast(context, "Cho bé ăn không thành công");
+    }
   }
 }
