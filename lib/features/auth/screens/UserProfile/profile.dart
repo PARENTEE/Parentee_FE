@@ -121,17 +121,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       Icons.inventory_2_outlined,
                       "Gia đình",
                       () async {
-                        // show loading dialog
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (_) => const Center(child: CircularProgressIndicator()),
-                        );
                         // Get family info
-                        final result = await FamilyService.getFamilyThroughToken();
-
-                        // Remove loading
-                        Navigator.pop(context);
+                        final result = await FamilyService.getFamilyThroughToken(context);
 
                         if (result.success) {
                           final family = Family.fromJson(result.data);

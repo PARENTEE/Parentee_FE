@@ -39,8 +39,14 @@ class _ParentMissionPageState extends State<ParentMissionPage> {
           final endsAt = DateTime.parse(task['endsAt']);
           final timeFormat = DateFormat('HH:mm');
 
+          var role = "Bố";
+          if(task['assignedToRole'] == "Mother") role = "Mẹ";
+          else if(task['assignedToRole'] == "Others") role = "Khác";
+
           return {
             'id': task['id'],
+            'assignedToFullName': task['assignedToFullName'],
+            'assignedToRole': role,
             'title': task['title'],
             'time': '${timeFormat.format(startsAt)} - ${timeFormat.format(endsAt)}',
             'done': task['status'] == 1, // or adjust if you have another meaning
@@ -165,8 +171,23 @@ class _ParentMissionPageState extends State<ParentMissionPage> {
               m["done"] ? Icons.check_circle : Icons.access_time,
               color: m["done"] ? Colors.green : AppColors.primary_button,
             ),
-            title: Text(m["title"],
-                style: const TextStyle(fontWeight: FontWeight.w600)),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  m["title"],
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                ),
+                Text(
+                  "${m["assignedToFullName"] ?? "Chưa gán"} (${m["assignedToRole"] ?? "-"})",
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey.shade700,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
             subtitle: Text("🕒 ${m["time"]}"),
 
             trailing: Switch(

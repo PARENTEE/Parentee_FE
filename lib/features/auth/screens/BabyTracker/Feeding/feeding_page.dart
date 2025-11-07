@@ -83,8 +83,10 @@ class _AddFeedingPageState extends State<AddFeedingPage>
       'childId': widget.childId,
       'method': selectedType, // ví dụ: 0, 1 hoặc "Breast", tùy enum backend bạn
       'startedAt': startTime?.toIso8601String(),
-      'leftDuration': UtilsService.formatDuration(Duration(seconds: leftSeconds)), // "00:05:30"
-      'rightDuration': UtilsService.formatDuration(Duration(seconds: rightSeconds)), // "00:04:15"
+      'leftDuration': UtilsService.formatDuration(
+          Duration(seconds: leftSeconds)), // "00:05:30"
+      'rightDuration': UtilsService.formatDuration(
+          Duration(seconds: rightSeconds)), // "00:04:15"
       'notes': _noteController.text,
     };
 
@@ -114,7 +116,7 @@ class _AddFeedingPageState extends State<AddFeedingPage>
     // Remove loading
     Navigator.pop(context);
 
-    if(response.success){
+    if (response.success) {
       PopUpToastService.showSuccessToast(context, "Cho con bú thành công");
       Navigator.pop(context);
     }
@@ -140,7 +142,6 @@ class _AddFeedingPageState extends State<AddFeedingPage>
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(title: const Text("Cho bú"), centerTitle: true),
       body: Padding(
@@ -187,9 +188,15 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                         if (selected != null) {
                           setState(() {
                             startTime = DateTime(
-                              DateTime.now().year,
-                              DateTime.now().month,
-                              DateTime.now().day,
+                              DateTime
+                                  .now()
+                                  .year,
+                              DateTime
+                                  .now()
+                                  .month,
+                              DateTime
+                                  .now()
+                                  .day,
                               selected.hour,
                               selected.minute,
                             );
@@ -201,7 +208,9 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                     const SizedBox(width: 8),
                     Text(
                       startTime != null
-                          ? "${startTime!.hour.toString().padLeft(2, '0')}:${startTime!.minute.toString().padLeft(2, '0')}"
+                          ? "${startTime!.hour.toString().padLeft(
+                          2, '0')}:${startTime!.minute.toString().padLeft(
+                          2, '0')}"
                           : "Chưa đặt",
                       style: TextStyle(
                         fontSize: 16,
@@ -225,14 +234,16 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                 width: double.infinity,
                 child: TabBar(
                   controller: _tabController,
-                  isScrollable: false, // 👈 bắt buộc để tab chiếm đều
+                  isScrollable: false,
+                  // 👈 bắt buộc để tab chiếm đều
                   labelColor: Colors.white,
                   unselectedLabelColor: Colors.black87,
                   indicator: BoxDecoration(
                     color: AppColors.primary_button,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  indicatorSize: TabBarIndicatorSize.tab, // 👈 quan trọng để chiếm full nửa tab
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  // 👈 quan trọng để chiếm full nửa tab
                   tabs: const [
                     Tab(text: "Nút"),
                     Tab(text: "Nhập tay"),
@@ -287,8 +298,10 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          _buildSideButton("TRÁI", leftRunning, () => _toggleTimer('left')),
-                          _buildSideButton("PHẢI", rightRunning, () => _toggleTimer('right')),
+                          _buildSideButton(
+                              "TRÁI", leftRunning, () => _toggleTimer('left')),
+                          _buildSideButton("PHẢI", rightRunning, () =>
+                              _toggleTimer('right')),
                         ],
                       ),
                     ],
@@ -322,14 +335,17 @@ class _AddFeedingPageState extends State<AddFeedingPage>
   }
 
   Widget _buildManualEntry() {
-
     return Padding(
       padding: const EdgeInsets.only(top: 20),
       child: ListView(
         children: [
 
           GestureDetector(
-            onTap: () => _pickDuration(context),
+            onTap: () => _pickDuration(
+              context,
+              _leftDuration,
+                  (newDuration) => setState(() => _leftDuration = newDuration),
+            ),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
               decoration: BoxDecoration(),
@@ -338,18 +354,26 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                 children: [
                   const Text(
                     "Bú vú trái (phút:giây)",
-                    style: TextStyle( fontSize: 15),
+                    style: TextStyle(fontSize: 15),
                   ),
                   Text(
-                    "${_leftDuration.inMinutes.toString().padLeft(2, '0')}:${(_manualDuration.inSeconds % 60).toString().padLeft(2, '0')}",
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    "${_leftDuration.inMinutes.toString().padLeft(
+                        2, '0')}:${(_leftDuration.inSeconds % 60)
+                        .toString()
+                        .padLeft(2, '0')}",
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
             ),
           ),
           GestureDetector(
-            onTap: () => _pickDuration(context),
+            onTap: () => _pickDuration(
+              context,
+              _rightDuration,
+                  (newDuration) => setState(() => _rightDuration = newDuration),
+            ),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
               decoration: BoxDecoration(),
@@ -361,8 +385,12 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                     style: TextStyle(fontSize: 15),
                   ),
                   Text(
-                    "${_rightDuration.inMinutes.toString().padLeft(2, '0')}:${(_manualDuration.inSeconds % 60).toString().padLeft(2, '0')}",
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    "${_rightDuration.inMinutes.toString().padLeft(
+                        2, '0')}:${(_rightDuration.inSeconds % 60)
+                        .toString()
+                        .padLeft(2, '0')}",
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -416,12 +444,12 @@ class _AddFeedingPageState extends State<AddFeedingPage>
     );
   }
 
-  // Duration Picker
-  Duration _manualDuration = const Duration(minutes: 0, seconds: 0);
-
-  Future<void> _pickDuration(BuildContext context) async {
-    int minutes = _manualDuration.inMinutes;
-    int seconds = _manualDuration.inSeconds % 60;
+  Future<void> _pickDuration(BuildContext context,
+      Duration initialDuration,
+      Function(Duration) onSelected, // ✅ thêm callback
+      ) async {
+    int minutes = initialDuration.inMinutes;
+    int seconds = initialDuration.inSeconds % 60;
 
     await showModalBottomSheet(
       context: context,
@@ -445,30 +473,24 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Minutes picker
                       DropdownButton<int>(
                         value: minutes,
-                        items: List.generate(
-                          60,
-                              (i) => DropdownMenuItem(
-                            value: i,
-                            child: Text("$i min"),
-                          ),
-                        ),
+                        items: List.generate(60, (i) =>
+                            DropdownMenuItem(
+                              value: i,
+                              child: Text("$i min"),
+                            )),
                         onChanged: (v) =>
                             setModalState(() => minutes = v ?? minutes),
                       ),
                       const SizedBox(width: 30),
-                      // Seconds picker
                       DropdownButton<int>(
                         value: seconds,
-                        items: List.generate(
-                          60,
-                              (i) => DropdownMenuItem(
-                            value: i,
-                            child: Text("$i sec"),
-                          ),
-                        ),
+                        items: List.generate(60, (i) =>
+                            DropdownMenuItem(
+                              value: i,
+                              child: Text("$i sec"),
+                            )),
                         onChanged: (v) =>
                             setModalState(() => seconds = v ?? seconds),
                       ),
@@ -477,12 +499,9 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                   const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: () {
-                      setState(() {
-                        _manualDuration = Duration(
-                          minutes: minutes,
-                          seconds: seconds,
-                        );
-                      });
+                      final newDuration = Duration(
+                          minutes: minutes, seconds: seconds);
+                      onSelected(newDuration); // ✅ cập nhật đúng biến
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
@@ -492,7 +511,8 @@ class _AddFeedingPageState extends State<AddFeedingPage>
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text("Done", style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                        "Done", style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),
@@ -502,5 +522,5 @@ class _AddFeedingPageState extends State<AddFeedingPage>
       },
     );
   }
-
 }
+

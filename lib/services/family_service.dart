@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:parentee_fe/features/auth/models/api_response.dart';
 import 'package:parentee_fe/services/api_service_dio.dart';
 
@@ -8,8 +9,9 @@ class FamilyService {
   // -- GET
   // ------------------
 
-  static Future<ApiResponse> getFamilyThroughToken() async {
-    return await _apiServiceDioInstance.sendRequest(
+  static Future<ApiResponse> getFamilyThroughToken(BuildContext context) async {
+    return await _apiServiceDioInstance.sendRequestWithLoading(
+      context,
       'families/details/token',
       method: 'GET',
     );
