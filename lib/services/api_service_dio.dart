@@ -16,7 +16,7 @@ class ApiServiceDio {
   late final Dio _dio;
 
   // 3. Base URL
-  static const String baseUrl = 'http://10.0.2.2:5000/api/v1/';
+  static const String baseUrl = 'https://parenteebe-production.up.railway.app/api/v1/';
 
   // 4. Private constructor (for the singleton)
   ApiServiceDio._internal();

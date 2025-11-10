@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:parentee_fe/features/auth/models/article.dart';
+import 'package:parentee_fe/features/auth/models/user.dart';
 import 'package:parentee_fe/features/auth/screens/ArticlePage/article_detail_page.dart';
 import 'package:parentee_fe/features/auth/screens/BabyTracker/baby_preview_page.dart';
 import 'package:parentee_fe/features/auth/screens/BabyTracker/baby_profile.dart';
@@ -8,14 +9,64 @@ import 'package:parentee_fe/features/auth/screens/Chatbot/chat_topics_page.dart'
 import 'package:parentee_fe/features/auth/screens/HomePage/Notification/notification.dart';
 import 'package:parentee_fe/features/auth/screens/MedicinePage/medicine_page.dart';
 import 'package:parentee_fe/features/auth/screens/NutrientPage/nutrient_page.dart';
+import 'package:parentee_fe/features/auth/screens/Onboarding/onboarding-page.dart';
 import 'package:parentee_fe/features/auth/screens/UserProfile/profile.dart';
 import 'package:parentee_fe/features/auth/widgets/bottom_nav.dart';
 import 'package:parentee_fe/features/auth/screens/HomePage/Weather/weather.dart';
+import 'package:parentee_fe/services/auth_service.dart';
+import 'package:parentee_fe/services/popup_toast_service.dart';
+import 'package:parentee_fe/services/shared_preferences_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../BabyTracker/Sleep/add_sleep_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  User? user;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUser();
+  }
+
+  Future<void> loadUser() async {
+    try {
+      final loadedUser = await SharedPreferencesService.getUserFromPrefs()
+          .timeout(const Duration(seconds: 5));
+      if (loadedUser == null) {
+        await _logout();
+        PopUpToastService.showWarningToast(context, "Phiên đăng nhập đã hết hạn!");
+        return;
+      }
+      setState(() {
+        user = loadedUser;
+      });
+    } catch (e) {
+      print("Error loading user: $e");
+    }
+  }
+
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    await prefs.remove('user');
+
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const OnboardingPage()),
+          (route) => false,
+    );
+
+  }
 
   // 🟩 Danh mục
   static final List<Map<String, dynamic>> categories = [
@@ -218,6 +269,7 @@ Bữa tối:
 
   @override
   Widget build(BuildContext context) {
+
     return BottomNav(
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
@@ -249,26 +301,26 @@ Bữa tối:
                         //   ),
                         // );
                       },
-                      child: const Row(
+                      child: Row( // Bỏ const ở đây
                         children: [
-                          CircleAvatar(
+                          const CircleAvatar(
                             radius: 24,
                             backgroundImage: AssetImage(
                               "assets/images/homepage/family.jpg",
                             ),
                           ),
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Chào mừng! Admin",
-                                style: TextStyle(
+                                "Chào mừng! ${user?.fullName ?? "Admin"}", // Hiển thị tên nếu có
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Text(
+                              const Text(
                                 "Miễn phí",
                                 style: TextStyle(color: Colors.grey),
                               ),
