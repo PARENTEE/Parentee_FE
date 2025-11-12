@@ -272,7 +272,7 @@ class _AddSolidFoodPageState extends State<AddSolidFoodPage> {
     // Gửi request
     final requestBody = {
       "childId": widget.childId,
-      "ateAt": _selectedDateTime.toIso8601String(),
+      "ateAt": _selectedDateTime.toUtc().toIso8601String(),
       "name": name,
       "quantity": quantity,
       "unit": unitValue,

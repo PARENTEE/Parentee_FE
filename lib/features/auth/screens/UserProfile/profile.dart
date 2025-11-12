@@ -139,7 +139,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         }
                         // If family not exist -> navigate to family preview page
                         else if(!result.success){
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (context) => const FamilyPreviewPage(),

@@ -15,6 +15,14 @@ class FamilyPage extends StatefulWidget {
 }
 
 class _FamilyPageState extends State<FamilyPage> {
+  late Family family; // ✅ khai báo biến family trong state
+
+  @override
+  void initState() {
+    super.initState();
+    family = widget.family; // ✅ gán giá trị ban đầu
+  }
+
   final List<Map<String, dynamic>> _partners = [
     {
       "name": "Nguyễn Thảo",
@@ -41,8 +49,6 @@ class _FamilyPageState extends State<FamilyPage> {
 
   @override
   Widget build(BuildContext context) {
-    final family = widget.family;
-
     return Scaffold(
       appBar: AppBar(title: const Text("Gia đình")),
       body: SingleChildScrollView(
@@ -320,6 +326,7 @@ class _FamilyPageState extends State<FamilyPage> {
                       if (result.success) {
                         Navigator.pop(context);
                         Navigator.pop(context);
+                        await _loadFamily();
                         PopUpToastService.showSuccessToast(context, "Đã gửi lời mời tới ${user.fullName} với vai trò ${roles.firstWhere((r) => r["value"] == selectedRole)["label"]}");
                       }
                       else {
@@ -335,5 +342,17 @@ class _FamilyPageState extends State<FamilyPage> {
         );
       },
     );
+  }
+
+  Future<void> _loadFamily() async {
+    final result = await FamilyService.getFamilyThroughToken(context);
+
+    if (result.success) {
+      setState(() {
+        family = Family.fromJson(result.data); // ✅ giờ có thể gán được
+      });
+    } else {
+      PopUpToastService.showErrorToast(context, "Không thể tải gia đình này");
+    }
   }
 }

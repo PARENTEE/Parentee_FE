@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
 import 'package:parentee_fe/features/auth/models/family.dart';
+import 'package:parentee_fe/features/auth/models/family_user.dart';
+import 'package:parentee_fe/features/auth/models/user.dart';
 import 'package:parentee_fe/features/auth/screens/UserProfile/Family/family_page.dart';
 import 'package:parentee_fe/services/family_service.dart';
 import 'package:parentee_fe/services/popup_toast_service.dart';
+import 'package:parentee_fe/services/shared_preferences_service.dart';
 
 class FamilyPreviewPage extends StatefulWidget {
   const FamilyPreviewPage({super.key});
@@ -125,10 +128,29 @@ class _FamilyPreviewPageState extends State<FamilyPreviewPage> {
 
                       if (result.success) {
                         final family = Family.fromJson(result.data);
+                        User? user = await SharedPreferencesService.getUserFromPrefs();
+
+                        if (user != null) {
+                          family.familyUsers.add(
+                            FamilyUser(
+                              id: user.id,
+                              email: user.email,
+                              role: user.role,
+                              fullName: user.fullName,
+                              gender: 0,
+                              familyRole: "Member",    // default role trong family
+                              invitationStatus: 0,
+                              createdAt: DateTime.now(),
+                              updatedAt: DateTime.now(),
+                            ),
+                          );
+                        }
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => FamilyPage(family: family)),
                         );
+
                       } else {
                         PopUpToastService.showErrorToast(context, result.message.toString());
                       }

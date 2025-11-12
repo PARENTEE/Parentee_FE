@@ -5,6 +5,16 @@ import 'package:parentee_fe/services/api_service_dio.dart';
 class ChildService {
   static final ApiServiceDio _apiServiceDioInstance = ApiServiceDio();
 
+  static Future<ApiResponse> chatAnswer(String message) async {
+    return await _apiServiceDioInstance.sendRequest(
+      'chat',
+      method: 'POST',
+      data: {
+        "message" : message
+      }
+    );
+  }
+
   // ------------------
   // -- GET
   // ------------------

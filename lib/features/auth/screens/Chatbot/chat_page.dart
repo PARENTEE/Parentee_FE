@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
+import 'package:parentee_fe/services/child_service.dart';
+import 'package:parentee_fe/services/popup_toast_service.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -28,23 +30,35 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  void _sendMessage(String text) {
+  void _sendMessage(String text) async {
     if (text.trim().isEmpty) return;
 
+    // Thêm tin nhắn của user
     setState(() {
-      _messages.insert(0, {"from": "user", "text": text}); // thêm tin nhắn mới
+      _messages.insert(0, {"from": "user", "text": text});
     });
     _controller.clear();
 
-    // giả lập bot trả lời sau 1s
-    Future.delayed(const Duration(seconds: 1), () {
-      setState(() {
-        _messages.insert(0, {
-          "from": "bot",
-          "text": "Mình sẽ hỗ trợ bạn với: $text",
-        });
-      });
+    // Thêm tin nhắn loading của bot
+    setState(() {
+      _messages.insert(0, {"from": "bot", "text": "loading"});
     });
+
+    int loadingIndex = 0; // chỉ số của tin nhắn loading
+
+    // Gọi API
+    var response = await ChildService.chatAnswer(text);
+
+    if (response.success) {
+      setState(() {
+        _messages[loadingIndex]["text"] = response.data;
+      });
+    } else {
+      setState(() {
+        _messages.removeAt(loadingIndex);
+      });
+      PopUpToastService.showErrorToast(context, "Dịch vụ AI hiện đang bận.");
+    }
   }
 
   @override
@@ -61,7 +75,7 @@ class _ChatPageState extends State<ChatPage> {
           // Tin nhắn
           Expanded(
             child: ListView.builder(
-              reverse: true, // tin nhắn trôi từ dưới lên
+              reverse: true,
               padding: const EdgeInsets.all(16),
               itemCount: _messages.length,
               itemBuilder: (context, index) {
@@ -70,18 +84,26 @@ class _ChatPageState extends State<ChatPage> {
 
                 return Align(
                   alignment:
-                      isUser ? Alignment.centerRight : Alignment.centerLeft,
+                  isUser ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color:
-                          isUser
-                              ? AppColors.primary_button
-                              : AppColors.chatMessage,
+                      color: isUser
+                          ? AppColors.primary_button
+                          : AppColors.chatMessage,
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Text(
+                    child: msg["text"] == "loading"
+                        ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.primary_button,
+                      ),
+                    )
+                        : Text(
                       msg["text"]!,
                       style: TextStyle(
                         color: isUser ? Colors.white : Colors.black,
