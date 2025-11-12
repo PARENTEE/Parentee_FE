@@ -68,6 +68,7 @@ class TaskDialog {
                     const SizedBox(height: 16),
 
                     DropdownButtonFormField<String>(
+                      isExpanded: true, // ✅ Rất quan trọng để tránh overflow
                       decoration: const InputDecoration(
                         labelText: "Giao cho",
                         border: OutlineInputBorder(),
@@ -77,13 +78,24 @@ class TaskDialog {
                         return DropdownMenuItem<String>(
                           value: member.id,
                           child: Row(
-                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(member.fullName),
+                              // ✅ Tên (tự co lại khi quá dài)
+                              Flexible(
+                                child: Text(
+                                  member.fullName,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+
                               const SizedBox(width: 6),
-                              Text(
-                                "(${getFamilyRoleName(member.gender)})",
-                                style: const TextStyle(fontSize: 13, color: Colors.grey),
+
+                              // ✅ Role (Mẹ/Bố/Khác) cũng giới hạn overflow
+                              Flexible(
+                                child: Text(
+                                  "(${getFamilyRoleName(member.gender)})",
+                                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ],
                           ),

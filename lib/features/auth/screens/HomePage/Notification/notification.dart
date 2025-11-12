@@ -205,7 +205,7 @@ class _NotificationPageState extends State<NotificationPage> {
                                     foregroundColor: Colors.white,
                                   ),
                                   icon: const Icon(Icons.check, size: 18),
-                                  label: const Text("Chấp nhận"),
+                                  label: const Text("Đồng ý"),
                                   onPressed: () {
                                     _handleInviteAction(context, item, true);
                                   },

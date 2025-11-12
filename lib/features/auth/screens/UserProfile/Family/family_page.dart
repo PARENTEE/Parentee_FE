@@ -229,16 +229,25 @@ class _FamilyPageState extends State<FamilyPage> {
                             return Card(
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               child: ListTile(
+                                dense: true, // Giảm khoảng cách trong ListTile
+                                minLeadingWidth: 36, // Tránh bị chiếm quá nhiều chỗ từ avatar
                                 leading: CircleAvatar(
                                   backgroundImage: NetworkImage(
                                     "https://i.pravatar.cc/150?u=${user.email}",
                                   ),
                                 ),
-                                title: Text(user.fullName),
-                                subtitle: Text(user.email),
-                                trailing: ElevatedButton.icon(
-                                  icon: const Icon(Icons.send, size: 18),
-                                  label: const Text("Mời"),
+                                title: Text(
+                                  user.fullName,
+                                  maxLines: 1, // ✅ Chỉ 1 dòng
+                                  overflow: TextOverflow.ellipsis, // ✅ Nếu dài quá -> "..."
+                                ),
+                                subtitle: Text(
+                                  user.email,
+                                  maxLines: 1, // ✅ Đảm bảo 1 dòng
+                                  overflow: TextOverflow.ellipsis, // ✅ Không xuống dòng
+                                ),
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.send),
                                   onPressed: () {
                                     _showRoleSelectDialog(context, familyId, user);
                                   },

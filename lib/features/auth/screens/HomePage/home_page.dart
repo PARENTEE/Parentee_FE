@@ -293,31 +293,29 @@ Bữa tối:
                 Row(
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (_) => const BabyProfilePage(children: children),
-                        //   ),
-                        // );
-                      },
-                      child: Row( // Bỏ const ở đây
+                      onTap: () {},
+                      child: Row(
                         children: [
                           const CircleAvatar(
                             radius: 24,
-                            backgroundImage: AssetImage(
-                              "assets/images/homepage/family.jpg",
-                            ),
+                            backgroundImage: AssetImage("assets/images/homepage/family.jpg"),
                           ),
                           const SizedBox(width: 12),
+
+                          // ✅ Fix overflow tên dài
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                "Chào mừng! ${user?.fullName ?? "Admin"}", // Hiển thị tên nếu có
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                              SizedBox(
+                                width: 240, // <-- giới hạn chiều rộng tối đa cho tên
+                                child: Text(
+                                  "Chào mừng ${user?.fullName ?? "Admin"}!",
+                                  maxLines: 1, // ✅ chỉ 1 dòng
+                                  overflow: TextOverflow.ellipsis, // ✅ nếu dài thì "..."
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                               const Text(
@@ -330,6 +328,8 @@ Bữa tối:
                       ),
                     ),
                     const Spacer(),
+
+                    // 🔔 Notifications giữ nguyên, không bị đẩy nữa
                     Stack(
                       clipBehavior: Clip.none,
                       children: [
@@ -339,9 +339,7 @@ Bữa tối:
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => const NotificationPage(),
-                              ),
+                              MaterialPageRoute(builder: (_) => const NotificationPage()),
                             );
                           },
                           icon: const Icon(Icons.notifications_none, size: 30),
