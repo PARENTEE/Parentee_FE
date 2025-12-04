@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
 import 'package:parentee_fe/features/auth/screens/HomePage/home_page.dart';
@@ -6,13 +7,16 @@ import 'package:parentee_fe/features/auth/screens/Onboarding/onboarding-page.dar
 import 'package:parentee_fe/features/auth/wrapper/auth_wrapper.dart';
 import 'package:parentee_fe/services/api_service_dio.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:parentee_fe/services/chat_service.dart';
 
 void main() async {
   // 1. Must be the very first call in main()
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
 
   // 2. Initialize the Dio Singleton
   ApiServiceDio.initialize();
+  ChatService.init();
 
   runApp(const MyApp());
 }
