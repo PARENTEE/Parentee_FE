@@ -81,7 +81,7 @@ class _BabyTrackerTimelinePageState extends State<BabyTrackerTimelinePage> {
             final endDate = DateTime.parse(item["endTime"]);
 
             return {
-              "color": AppColors.primary_button,
+              "color": Colors.orangeAccent,
               "message": item["message"], // ✅ Thêm dòng này
               "icon": Icons.restaurant,   // ✅ Thêm để hiện logo dễ hơn
               "startTime": TimeOfDay(
@@ -100,7 +100,7 @@ class _BabyTrackerTimelinePageState extends State<BabyTrackerTimelinePage> {
             return {
               "color": Colors.orangeAccent,
               "message": item["message"],
-              "icon": Icons.restaurant_menu,
+              "icon": Icons.restaurant,
               "startTime": TimeOfDay(
                 hour: startDate.hour,
                 minute: startDate.minute,
