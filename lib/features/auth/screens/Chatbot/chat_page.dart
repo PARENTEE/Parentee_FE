@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
 import 'package:parentee_fe/services/chat_service.dart';
 import 'package:parentee_fe/services/popup_toast_service.dart';
@@ -113,10 +114,17 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                     child: msg["text"]!.isEmpty && !_isStreaming
                         ? const SizedBox.shrink()
-                        : Text(
-                      msg["text"]!,
-                      style: TextStyle(
-                        color: isUser ? Colors.white : Colors.black,
+                        : MarkdownBody(
+                      data: msg["text"]!,
+                      styleSheet: MarkdownStyleSheet(
+                        p: TextStyle(
+                            color: isUser ? Colors.white : Colors.black,
+                            fontSize: 15),
+                        strong: TextStyle(
+                            color: isUser ? Colors.white : Colors.black,
+                            fontWeight: FontWeight.bold),
+                        listBullet: TextStyle(
+                            color: isUser ? Colors.white : Colors.black),
                       ),
                     ),
                   ),
