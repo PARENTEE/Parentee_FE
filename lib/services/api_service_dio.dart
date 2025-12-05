@@ -122,7 +122,7 @@ class ApiServiceDio {
       );
     }
 
-    print('Call API with full endpoint: $baseUrl/$endpoint');
+    print('Call API with full endpoint: $baseUrl$endpoint');
 
     String? token = await SharedPreferencesService.getToken();
 

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:intl/intl.dart';
 import 'package:parentee_fe/features/auth/models/api_response.dart';
 import 'package:parentee_fe/services/api_service_dio.dart';
 
@@ -31,9 +32,15 @@ class ChildService {
     required String childName,
     String? date,
   }) async {
+    print("DATEEEE: " + date!);
+
+    if(date == "today"){
+      date = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    }
+    print("DATEEEE: " + date!);
 
     return await _apiServiceDioInstance.sendRequest(
-      'child/status',
+      'child/status?date=${date}&childName=${childName}',
       method: 'GET',
     );
   }
