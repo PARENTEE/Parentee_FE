@@ -27,6 +27,18 @@ class ChildService {
     );
   }
 
+  static Future<ApiResponse> getChildStatus({
+    required String childName,
+    String? date,
+  }) async {
+
+    return await _apiServiceDioInstance.sendRequest(
+      'child/status',
+      method: 'GET',
+    );
+  }
+
+
   static Future<ApiResponse> getChildReport(BuildContext context, String childId, DateTime date) async {
     return await _apiServiceDioInstance.sendRequestWithLoading(
       context,
