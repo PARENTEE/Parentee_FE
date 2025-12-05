@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:parentee_fe/features/auth/models/article.dart';
+import 'package:parentee_fe/features/auth/models/child.dart';
 import 'package:parentee_fe/features/auth/models/user.dart';
 import 'package:parentee_fe/features/auth/screens/ArticlePage/article_detail_page.dart';
 import 'package:parentee_fe/features/auth/screens/BabyTracker/baby_preview_page.dart';
@@ -10,15 +11,12 @@ import 'package:parentee_fe/features/auth/screens/HomePage/Notification/notifica
 import 'package:parentee_fe/features/auth/screens/MedicinePage/medicine_page.dart';
 import 'package:parentee_fe/features/auth/screens/NutrientPage/nutrient_page.dart';
 import 'package:parentee_fe/features/auth/screens/Onboarding/onboarding-page.dart';
-import 'package:parentee_fe/features/auth/screens/UserProfile/profile.dart';
 import 'package:parentee_fe/features/auth/widgets/bottom_nav.dart';
 import 'package:parentee_fe/features/auth/screens/HomePage/Weather/weather.dart';
-import 'package:parentee_fe/services/auth_service.dart';
+import 'package:parentee_fe/services/child_service.dart';
 import 'package:parentee_fe/services/popup_toast_service.dart';
 import 'package:parentee_fe/services/shared_preferences_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../BabyTracker/Sleep/add_sleep_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -73,34 +71,52 @@ class _HomePageState extends State<HomePage> {
     {
       "icon": "assets/images/order-tracking.png",
       "label": "Bộ theo dõi",
-      "page": const BabyPreviewPage(),
+      "onTap": (BuildContext context) async {
+        final response = await ChildService.getChildrenInCurrentFamily(context);
+
+        if (response.success) {
+          final List<dynamic>? data = response.data;
+
+          final List<Child> children =
+          (data != null && data.isNotEmpty)
+              ? data.map((e) => Child.fromJson(e)).toList()
+              : [];
+
+          if (children.isNotEmpty) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BabyProfilePage(children: children),
+              ),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BabyPreviewPage(),
+              ),
+            );
+          }
+        } else {
+          PopUpToastService.showErrorToast(
+              context, "Lấy thông tin các bé không thành công.");
+        }
+      },
       "color": const Color(0xFFFFE5E0),
     },
     {
       "icon": "assets/images/weather.png",
       "label": "Thời tiết",
-      "page": const WeatherPage(),
+      "onTap": (BuildContext context) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const WeatherPage()),
+        );
+      },
       "color": const Color(0xFFD0EAF2),
     },
-    // {
-    //   "icon": "assets/images/drugs.png",
-    //   "label": "Thuốc",
-    //   "page": const MedicinePage(),
-    //   "color": const Color(0xFFFBE7C6),
-    // },
-    // {
-    //   "icon": "assets/images/nutrient.png",
-    //   "label": "Dinh dưỡng",
-    //   "page": const NutrientPage(),
-    //   "color": const Color(0xFFE0F7E9),
-    // },
-    // {
-    //   "icon": "assets/images/sleep.png",
-    //   "label": "Giấc ngủ",
-    //   "page": const AddSleepPage(),
-    //   "color": Color(0xFFE8F6FF),
-    // },
   ];
+
 
   static final List<String> banners = [
     "assets/images/carousel/carousel_1.jpg",
@@ -329,7 +345,6 @@ Bữa tối:
                     ),
                     const Spacer(),
 
-                    // 🔔 Notifications giữ nguyên, không bị đẩy nữa
                     Stack(
                       clipBehavior: Clip.none,
                       children: [
@@ -404,9 +419,9 @@ Bữa tối:
                               padding: const EdgeInsets.only(bottom: 10),
                               child: _buildCategory(
                                 context,
-                                cat["icon"] ?? "",
-                                cat["label"] ?? "",
-                                cat["page"],
+                                cat["icon"],
+                                cat["label"],
+                                cat["onTap"],   // <-- thay page = callback
                                 cat["color"] ?? Colors.grey.shade200,
                               ),
                             ),
@@ -483,49 +498,26 @@ Bữa tối:
   }
 
   /// 🟦 Danh mục
-  static Widget _buildCategory(
-    BuildContext context,
-    String image,
-    String label,
-    Widget page,
-    Color bgColor,
-  ) {
-    return InkWell(
-      onTap:
-          () =>
-              Navigator.push(context, MaterialPageRoute(builder: (_) => page)),
-      borderRadius: BorderRadius.circular(12),
+  Widget _buildCategory(
+      BuildContext context,
+      String icon,
+      String label,
+      Function onTap,
+      Color color,
+      ) {
+    return GestureDetector(
+      onTap: () => onTap(context),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: bgColor,
+          color: color,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
         ),
         child: Row(
           children: [
-            if (image.isNotEmpty)
-              Image.asset(image, height: 40, width: 40)
-            else
-              const Icon(Icons.image, size: 40, color: Colors.grey),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-            ),
-            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+            Image.asset(icon, width: 40),
+            const SizedBox(width: 16),
+            Text(label, style: const TextStyle(fontSize: 16)),
           ],
         ),
       ),
