@@ -95,28 +95,28 @@ class _ChatTopicsPageState extends State<ChatTopicsPage> {
                 const SizedBox(height: 12), // khoảng cách giữa 2 nút
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        transitionDuration: const Duration(milliseconds: 400),
-                        pageBuilder: (_, __, ___) => const ChatPage(),
-                        transitionsBuilder: (
-                          context,
-                          animation,
-                          secondaryAnimation,
-                          child,
-                        ) {
-                          final tween = Tween(
-                            begin: const Offset(0, 1),
-                            end: Offset.zero,
-                          ).chain(CurveTween(curve: Curves.easeInOut));
-                          return SlideTransition(
-                            position: animation.drive(tween),
-                            child: child,
-                          );
-                        },
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   PageRouteBuilder(
+                    //     transitionDuration: const Duration(milliseconds: 400),
+                    //     pageBuilder: (_, __, ___) => const ChatPage(),
+                    //     transitionsBuilder: (
+                    //       context,
+                    //       animation,
+                    //       secondaryAnimation,
+                    //       child,
+                    //     ) {
+                    //       final tween = Tween(
+                    //         begin: const Offset(0, 1),
+                    //         end: Offset.zero,
+                    //       ).chain(CurveTween(curve: Curves.easeInOut));
+                    //       return SlideTransition(
+                    //         position: animation.drive(tween),
+                    //         child: child,
+                    //       );
+                    //     },
+                    //   ),
+                    //  );
                   },
                   child: const Text("Trò chuyện với Chuyên gia AI"),
                 ),

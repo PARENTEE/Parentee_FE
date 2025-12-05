@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:parentee_fe/app/theme/app_colors.dart';
-import 'package:parentee_fe/services/child_service.dart';
+import 'package:parentee_fe/services/chat_service.dart';
 import 'package:parentee_fe/services/popup_toast_service.dart';
 
 class ChatPage extends StatefulWidget {
@@ -17,74 +18,91 @@ class _ChatPageState extends State<ChatPage> {
   final List<Map<String, String>> _messages = [
     {
       "from": "bot",
-      "text": "Chào bạn, rất vui được gặp bạn. Bạn gặp vấn đề gì với bé?",
+      "text": "Chào bạn, mình là trợ lý chăm sóc bé 0–12 tháng. Bé đang gặp vấn đề gì nhỉ?",
     },
   ];
+
+  bool _isStreaming = false;
 
   @override
   void initState() {
     super.initState();
-    // Auto bật bàn phím
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FocusScope.of(context).requestFocus(_focusNode);
     });
   }
 
-  void _sendMessage(String text) async {
-    if (text.trim().isEmpty) return;
+  // ----------------------------
+  // STREAMING SEND MESSAGE
+  // ----------------------------
+  void _sendMessage(String text) {
+    if (text.trim().isEmpty || _isStreaming) return;
 
-    // Thêm tin nhắn của user
+    // Add user message
     setState(() {
       _messages.insert(0, {"from": "user", "text": text});
     });
     _controller.clear();
 
-    // Thêm tin nhắn loading của bot
+    // Reserve bot message (empty)
     setState(() {
-      _messages.insert(0, {"from": "bot", "text": "loading"});
+      _messages.insert(0, {"from": "bot", "text": ""});
+      _isStreaming = true;
     });
 
-    int loadingIndex = 0; // chỉ số của tin nhắn loading
+    final int botIndex = 0;
+    final buffer = StringBuffer();
 
-    // Gọi API
-    var response = await ChildService.chatAnswer(text);
+    ChatService.chatStream(text).listen(
+          (chunk) {
+        buffer.write(chunk);
 
-    if (response.success) {
-      setState(() {
-        _messages[loadingIndex]["text"] = response.data;
-      });
-    } else {
-      setState(() {
-        _messages.removeAt(loadingIndex);
-      });
-      PopUpToastService.showErrorToast(context, "Dịch vụ AI hiện đang bận.");
-    }
+        setState(() {
+          _messages[botIndex]["text"] = buffer.toString().trim();
+        });
+      },
+      onDone: () {
+        setState(() {
+          _isStreaming = false;
+        });
+      },
+      onError: (err) {
+        PopUpToastService.showErrorToast(
+            context, "AI đang bận, vui lòng thử lại.");
+
+        setState(() {
+          _messages.removeAt(botIndex);
+          _isStreaming = false;
+        });
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Trợ Lý AI"),
+        title: const Text("Trợ Lý Nuôi Dạy Bé"),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
       ),
       body: Column(
         children: [
-          // Tin nhắn
+          // LIST MESSAGES
           Expanded(
             child: ListView.builder(
               reverse: true,
               padding: const EdgeInsets.all(16),
               itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final msg = _messages[index];
+              itemBuilder: (context, i) {
+                final msg = _messages[i];
                 final isUser = msg["from"] == "user";
 
                 return Align(
-                  alignment:
-                  isUser ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: isUser
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
                   child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     padding: const EdgeInsets.all(12),
@@ -94,19 +112,19 @@ class _ChatPageState extends State<ChatPage> {
                           : AppColors.chatMessage,
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: msg["text"] == "loading"
-                        ? SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.primary_button,
-                      ),
-                    )
-                        : Text(
-                      msg["text"]!,
-                      style: TextStyle(
-                        color: isUser ? Colors.white : Colors.black,
+                    child: msg["text"]!.isEmpty && !_isStreaming
+                        ? const SizedBox.shrink()
+                        : MarkdownBody(
+                      data: msg["text"]!,
+                      styleSheet: MarkdownStyleSheet(
+                        p: TextStyle(
+                            color: isUser ? Colors.white : Colors.black,
+                            fontSize: 15),
+                        strong: TextStyle(
+                            color: isUser ? Colors.white : Colors.black,
+                            fontWeight: FontWeight.bold),
+                        listBullet: TextStyle(
+                            color: isUser ? Colors.white : Colors.black),
                       ),
                     ),
                   ),
@@ -115,7 +133,7 @@ class _ChatPageState extends State<ChatPage> {
             ),
           ),
 
-          // Ô nhập tin nhắn
+          // INPUT AREA
           Padding(
             padding: const EdgeInsets.all(8),
             child: Row(
@@ -125,7 +143,7 @@ class _ChatPageState extends State<ChatPage> {
                     controller: _controller,
                     focusNode: _focusNode,
                     decoration: const InputDecoration(
-                      hintText: "Gửi tin nhắn...",
+                      hintText: "Nhập tin nhắn...",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(30)),
                       ),
@@ -140,7 +158,7 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               ],
             ),
-          ),
+          )
         ],
       ),
     );
