@@ -36,11 +36,11 @@ class _AddSolidFoodPageState extends State<AddSolidFoodPage> {
   };
 
   final List<String> _presets = [
-    "Banana",
-    "Avocado",
-    "Rice cereal",
-    "Sweet potato",
-    "Apple sauce",
+    "Chuối nghiền",
+    "Bơ nghiền",
+    "Bột gạo",
+    "Khoai lang nghiền",
+    "Bí đỏ",
   ];
 
   @override
@@ -55,7 +55,7 @@ class _AddSolidFoodPageState extends State<AddSolidFoodPage> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          "Thức ăn đặc",
+          "Ăn dặm",
           style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
